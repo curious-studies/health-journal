@@ -353,6 +353,25 @@
     a {
       color: var(--green);
     }
+
+    .btn-ghost {
+      padding: 7px 14px;
+      border-radius: var(--radius-md);
+      border: 0.5px solid var(--border);
+      background: var(--bg);
+      color: var(--text2);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.12s;
+      white-space: nowrap;
+    }
+
+    .btn-ghost.active {
+      border-color: var(--green);
+      background: var(--green-light);
+      color: var(--green-text);
+      font-weight: 500;
+    }
   </style>
 </head>
 
@@ -608,6 +627,9 @@
       const [podcastNote, setPodcastNote] = useState(existing.podcastNote || "");
       const [notes, setNotes] = useState(existing.notes || "");
       const [saved, setSaved] = useState(false);
+      const [foodPhotoB64, setFoodPhotoB64] = useState(existing.foodPhotoB64 || null);
+      const [foodAnalysing, setFoodAnalysing] = useState(false);
+      const [foodPhotoError, setFoodPhotoError] = useState("");
       const debounce = useRef(null);
 
       const toggle = (list, setList, item) =>
@@ -640,6 +662,35 @@
           setSpotifyError(e.message === "expired" ? "Token expired — refresh it in Settings" : "Couldn't connect to Spotify");
         }
         setSpotifyLoading(false);
+      };
+
+      const handleFoodPhoto = async (e) => {
+        const file = e.target.files[0]; if (!file) return;
+        if (!settings.anthropicKey) { setFoodPhotoError("Add your Anthropic API key in Settings ⚙"); return; }
+        setFoodAnalysing(true); setFoodPhotoError("");
+        try {
+          const b64 = await fileToBase64(file);
+          setFoodPhotoB64(b64.length > 400000 ? b64.substring(0, 400000) : b64);
+          const res = await fetch("https://api.anthropic.com/v1/messages", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json", "x-api-key": settings.anthropicKey,
+              "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true"
+            },
+            body: JSON.stringify({
+              model: "claude-sonnet-4-20250514", max_tokens: 200,
+              messages: [{
+                role: "user", content: [
+                  { type: "image", source: { type: "base64", media_type: file.type || "image/jpeg", data: b64 } },
+                  { type: "text", text: "Describe the food and drink in this photo in 1-2 short sentences for a health journal. Be specific about items and quantities. No preamble." }
+                ]
+              }]
+            })
+          });
+          const data = await res.json();
+          setFood(prev => prev ? prev + "\n" + (data.content?.[0]?.text || "") : (data.content?.[0]?.text || ""));
+        } catch { setFoodPhotoError("Couldn't analyse photo. Check your API key."); }
+        setFoodAnalysing(false); e.target.value = "";
       };
 
       const save = () => {
