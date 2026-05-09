@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+
+  <!-- Background — iOS-style corner radius (22.5% of 512) -->
+  <rect width="512" height="512" rx="115" fill="#f0f2e8"/>
+
+  <!-- Leaf -->
+  <path d="M256,378 C154,307 134,179 256,122 C378,179 358,307 256,378Z"
+        fill="#8fa88f" opacity="0.88"/>
+
+  <!-- Center vein -->
+  <line x1="256" y1="132" x2="256" y2="366"
+        stroke="#4a6b4a" stroke-width="5" opacity="0.28"
+        stroke-linecap="round"/>
+
+  <!-- Heartbeat / pulse line -->
+  <path d="M141,256 L182,256 L205,186 L230,326 L256,211 L278,301 L304,256 L371,256"
+        fill="none" stroke="#e8b4c8" stroke-width="14"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+</svg>

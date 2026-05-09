@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="apple-mobile-web-app-title" content="Health Journal"/>
+  <meta name="theme-color" content="#0f7a6e"/>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="apple-touch-icon" href="icon.svg"/>
+  <title>Health Journal</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg2: #f5f5f4; --bg3: #eeece9;
+      --text: #1c1917; --text2: #57534e; --text3: #a8a29e;
+      --border: #e7e5e4; --border2: #d6d3d1;
+      --green: #0f7a6e; --green-dark: #0f6e56; --green-light: #e1f5ee; --green-text: #0f6e56;
+      --red: #a32d2d; --red-light: #fcebeb;
+      --purple: #7c3aed; --purple-light: #ede9fe;
+      --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-top: env(safe-area-inset-top, 0px);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1c1917; --bg2: #292524; --bg3: #312e2b;
+        --text: #fafaf9; --text2: #a8a29e; --text3: #78716c;
+        --border: #2e2b28; --border2: #44403c;
+        --green-light: #0d3b32; --green-text: #34d399;
+        --red-light: #3b1212; --purple-light: #2e1b5e;
+      }
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: var(--font); }
+    body { padding-top: var(--safe-top); }
+    #root { max-width: 500px; margin: 0 auto; padding: 16px 16px calc(80px + var(--safe-bottom)); min-height: 100vh; }
+    input, textarea, button { font-family: var(--font); }
+    input, textarea {
+      width: 100%; padding: 10px 12px; border-radius: var(--radius-md);
+      border: 0.5px solid var(--border); background: var(--bg);
+      color: var(--text); font-size: 15px; outline: none;
+    }
+    input:focus, textarea:focus { border-color: var(--green); }
+    textarea { resize: vertical; }
+    .tab-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--bg); border-top: 0.5px solid var(--border);
+      display: flex; padding-bottom: var(--safe-bottom);
+      z-index: 50;
+    }
+    .tab-btn {
+      flex: 1; padding: 12px 0; background: none; border: none;
+      font-size: 12px; cursor: pointer; color: var(--text3);
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      transition: color 0.12s;
+    }
+    .tab-btn.active { color: var(--green); }
+    .tab-btn .icon { font-size: 20px; line-height: 1; }
+    .section-label {
+      font-size: 13px; font-weight: 500; color: var(--text2); margin: 0 0 8px;
+    }
+    .card { background: var(--bg2); border-radius: var(--radius-lg); padding: 14px; margin-bottom: 14px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 7px; }
+    .tag {
+      padding: 6px 12px; font-size: 13px; border-radius: 20px;
+      border: 1px solid var(--border); background: var(--bg);
+      color: var(--text2); cursor: pointer; transition: all 0.12s;
+      -webkit-user-select: none; user-select: none;
+    }
+    .tag.active-green { border-color: var(--green); background: var(--green-light); color: var(--green-text); font-weight: 500; }
+    .tag.active-red   { border-color: var(--red);   background: var(--red-light);   color: var(--red);   font-weight: 500; }
+    .tag.active-purple{ border-color: var(--purple); background: var(--purple-light); color: var(--purple); font-weight: 500; }
+    .stat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 14px; }
+    .stat { background: var(--bg2); border-radius: var(--radius-md); padding: 10px 12px; }
+    .stat-label { font-size: 11px; color: var(--text3); margin: 0; }
+    .stat-value { font-size: 22px; font-weight: 500; margin: 4px 0 0; }
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      z-index: 100; display: flex; align-items: flex-end; justify-content: center;
+    }
+    .modal {
+      width: 100%; max-width: 500px; background: var(--bg);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      padding: 20px 20px calc(20px + var(--safe-bottom));
+    }
+    .btn-primary {
+      width: 100%; padding: 13px; border-radius: var(--radius-md); border: none;
+      background: var(--green); color: #fff; font-size: 15px; font-weight: 500;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .btn-primary:active { background: var(--green-dark); }
+    .btn-primary.saved { background: var(--green-dark); }
+    .btn-secondary {
+      width: 100%; padding: 11px; border-radius: var(--radius-md);
+      border: 0.5px solid var(--border2); background: var(--bg);
+      color: var(--text); font-size: 14px; cursor: pointer; transition: all 0.2s;
+    }
+    .entry-card {
+      padding: 12px 14px; border-radius: var(--radius-lg);
+      border: 0.5px solid var(--border); background: var(--bg);
+      cursor: pointer; margin-bottom: 8px; transition: border-color 0.12s;
+    }
+    .entry-card:active { border-color: var(--border2); }
+    .weather-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 12px; padding: 3px 9px; border-radius: 10px;
+      border: 0.5px solid var(--border); background: var(--bg2); color: var(--text2);
+    }
+    .binge-alert {
+      padding: 10px 14px; border-radius: var(--radius-md);
+      background: var(--purple-light); border: 0.5px solid #c4b5fd;
+      font-size: 13px; color: var(--purple); margin-bottom: 14px;
+    }
+    .streak-alert {
+      padding: 10px 14px; border-radius: var(--radius-md);
+      background: var(--green-light); border: 0.5px solid #9fe1cb;
+      font-size: 13px; color: var(--green-text); margin-bottom: 14px;
+    }
+    .insight-box {
+      border-radius: var(--radius-lg); border: 0.5px solid var(--border);
+      padding: 14px 16px; background: var(--bg);
+    }
+    .back-btn {
+      background: none; border: none; font-size: 14px;
+      color: var(--text2); cursor: pointer; padding: 0 0 16px;
+    }
+    h2 { margin: 4px 0 0; font-size: 20px; font-weight: 500; }
+    h3 { margin: 0; font-size: 17px; font-weight: 500; }
+    p { margin: 0; }
+    a { color: var(--green); }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+// ── Constants ────────────────────────────────────────────────────────────────
+
+const SYMPTOMS = ["headache","fatigue","nausea","back pain","stomach ache","sore throat","runny nose","anxiety","insomnia","dizziness","muscle pain","eye strain","chest tightness","low appetite","bloating"];
+const ACTIVITIES = ["walking","running","gym","yoga","cycling","swimming","stretching","meditation","socialising","reading","cooking","work-heavy","good sleep","poor sleep"];
+const PODCAST_GENRES = ["true crime","self-help","comedy","news","tech","business","health","history","science","politics","drama","spirituality","mindfulness","finance","sports"];
+const RELATIVE = [
+  { value:  1, label: "Better",         short: "↑", color: "#0f6e56" },
+  { value:  0, label: "About the same", short: "—", color: "#888780" },
+  { value: -1, label: "Worse",          short: "↓", color: "#a32d2d" },
+];
+
+const TODAY = new Date().toISOString().split("T")[0];
+
+// ── Storage (localStorage) ───────────────────────────────────────────────────
+
+const store = {
+  get: (key) => { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; } catch { return null; } },
+  set: (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} },
+};
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function wmoDesc(c) {
+  if (c===0) return "Clear sky"; if (c<=2) return "Partly cloudy"; if (c===3) return "Overcast";
+  if (c<=49) return "Foggy"; if (c<=59) return "Drizzle"; if (c<=69) return "Rain";
+  if (c<=79) return "Snow"; if (c<=82) return "Rain showers"; if (c<=86) return "Snow showers";
+  if (c<=99) return "Thunderstorm"; return "";
+}
+function wmoEmoji(c) {
+  if (c===0) return "☀"; if (c<=2) return "⛅"; if (c===3) return "☁";
+  if (c<=49) return "🌫"; if (c<=69) return "🌧"; if (c<=79) return "❄";
+  if (c<=86) return "🌨"; if (c<=99) return "⛈"; return "🌡";
+}
+function relLabel(v) {
+  if (v===null||v===undefined) return "not logged";
+  return RELATIVE.find(r=>r.value===v)?.label||"—";
+}
+function formatDate(d) {
+  return new Date(d+"T00:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+}
+
+async function fetchSpotifyToday(token) {
+  const midnight = new Date(TODAY+"T00:00:00").getTime();
+  const res = await fetch(`https://api.spotify.com/v1/me/player/recently-played?limit=50&after=${midnight}`,
+    { headers:{ Authorization:`Bearer ${token}` } });
+  if (res.status===401) throw new Error("expired");
+  if (!res.ok) throw new Error("error");
+  const data = await res.json();
+  const tracks = {};
+  (data.items||[]).forEach(item => {
+    const key = `${item.track.name}|||${item.track.artists.map(a=>a.name).join(", ")}`;
+    if (!tracks[key]) tracks[key]={name:item.track.name,artist:item.track.artists.map(a=>a.name).join(", "),plays:0};
+    tracks[key].plays++;
+  });
+  return Object.values(tracks).sort((a,b)=>b.plays-a.plays);
+}
+
+// ── Small components ─────────────────────────────────────────────────────────
+
+function ThreeWay({ label, value, onChange }) {
+  return (
+    <div style={{marginBottom:14}}>
+      <p className="section-label" style={{marginBottom:7}}>
+        {label} <span style={{fontWeight:400,color:"var(--text3)",fontSize:12}}>vs yesterday</span>
+      </p>
+      <div style={{display:"flex",gap:8}}>
+        {RELATIVE.map(opt => {
+          const active = value===opt.value;
+          return (
+            <button key={opt.value} onClick={()=>onChange(active?null:opt.value)} style={{
+              flex:1, minHeight:52, padding:"8px 4px", borderRadius:"var(--radius-md)",
+              border:active?`2px solid ${opt.color}`:"1px solid var(--border)",
+              background:active?opt.color+"18":"var(--bg)",
+              color:active?opt.color:"var(--text2)",
+              cursor:"pointer", fontSize:13, fontWeight:active?600:400,
+              display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:3,
+              transition:"all 0.12s",
+            }}>
+              <span style={{fontSize:18,lineHeight:1}}>{opt.short}</span>
+              <span style={{fontSize:11,lineHeight:1.2,textAlign:"center"}}>{opt.label}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function WeatherChip({ weather }) {
+  if (!weather) return null;
+  return (
+    <span className="weather-chip">
+      {wmoEmoji(weather.code)} {Math.round(weather.temp)}°C
+      <span style={{color:"var(--text3)"}}>{weather.humidity}% · {wmoDesc(weather.code)}</span>
+    </span>
+  );
+}
+
+function Badge({ val }) {
+  if (val===null||val===undefined) return <span style={{color:"var(--text3)"}}>—</span>;
+  const opt=RELATIVE.find(r=>r.value===val);
+  return opt ? <span style={{color:opt.color,fontWeight:500}}>{opt.short} {opt.label}</span> : null;
+}
+
+// ── Settings Modal ───────────────────────────────────────────────────────────
+
+function SettingsModal({ settings, onSave, onClose }) {
+  const [anthropicKey, setAnthropicKey] = useState(settings.anthropicKey||"");
+  const [spotifyToken, setSpotifyToken] = useState(settings.spotifyToken||"");
+
+  const handleExport = () => {
+    const entries = store.get("entries")||[];
+    const blob = new Blob([JSON.stringify(entries,null,2)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `health-journal-${TODAY}.json`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImport = (e) => {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (Array.isArray(data)) {
+          store.set("entries", data);
+          alert(`Imported ${data.length} entries. Reload the app to see them.`);
+        } else { alert("Invalid file format."); }
+      } catch { alert("Couldn't read file."); }
+    };
+    reader.readAsText(file);
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={e=>e.stopPropagation()}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
+          <h3>Settings</h3>
+          <button onClick={onClose} style={{background:"none",border:"none",fontSize:20,color:"var(--text3)",cursor:"pointer",padding:4}}>✕</button>
+        </div>
+
+        {/* Anthropic API key */}
+        <div className="card" style={{marginBottom:12}}>
+          <p className="section-label" style={{marginBottom:4}}>🤖 Anthropic API key</p>
+          <p style={{fontSize:11,color:"var(--text3)",marginBottom:8,lineHeight:1.5}}>
+            Required for AI analysis. Get one free at{" "}
+            <a href="https://console.anthropic.com" target="_blank" rel="noreferrer">console.anthropic.com</a>
+          </p>
+          <input type="password" value={anthropicKey} onChange={e=>setAnthropicKey(e.target.value)}
+            placeholder="sk-ant-..."/>
+        </div>
+
+        {/* Spotify token */}
+        <div className="card" style={{marginBottom:12}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
+            <p className="section-label" style={{margin:0}}>🎵 Spotify token</p>
+            <span style={{fontSize:11,color:"var(--text3)"}}>music only, expires ~1hr</span>
+          </div>
+          <p style={{fontSize:11,color:"var(--text3)",marginBottom:8,lineHeight:1.5}}>
+            Get from{" "}
+            <a href="https://developer.spotify.com/console/get-recently-played/" target="_blank" rel="noreferrer">
+              Spotify API Console
+            </a>{" "}→ Get Token → check user-read-recently-played
+          </p>
+          <input type="password" value={spotifyToken} onChange={e=>setSpotifyToken(e.target.value)}
+            placeholder="BQA..."/>
+        </div>
+
+        {/* Data backup */}
+        <div className="card" style={{marginBottom:16}}>
+          <p className="section-label" style={{marginBottom:4}}>💾 Data backup</p>
+          <p style={{fontSize:11,color:"var(--text3)",marginBottom:10,lineHeight:1.5}}>
+            Safari can clear local data if the app hasn't been opened for a while. Export regularly to be safe.
+          </p>
+          <div style={{display:"flex",gap:8}}>
+            <button onClick={handleExport} className="btn-secondary" style={{flex:1,fontSize:13}}>Export JSON</button>
+            <label className="btn-secondary" style={{flex:1,fontSize:13,textAlign:"center",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>
+              Import JSON
+              <input type="file" accept=".json" onChange={handleImport} style={{display:"none"}}/>
+            </label>
+          </div>
+        </div>
+
+        <button onClick={()=>onSave({anthropicKey:anthropicKey.trim(),spotifyToken:spotifyToken.trim()})}
+          className="btn-primary">Save</button>
+      </div>
+    </div>
+  );
+}
+
+// ── Log Tab ──────────────────────────────────────────────────────────────────
+
+function LogTab({ entries, setEntries, settings }) {
+  const existing = entries.find(e=>e.date===TODAY)||{};
+  const [mood,setMood]         = useState(existing.mood??null);
+  const [energy,setEnergy]     = useState(existing.energy??null);
+  const [stress,setStress]     = useState(existing.stress??null);
+  const [symptoms,setSymptoms] = useState(existing.symptoms||[]);
+  const [activities,setActivities] = useState(existing.activities||[]);
+  const [food,setFood]         = useState(existing.food||"");
+  const [location,setLocation] = useState(existing.location||"");
+  const [weather,setWeather]   = useState(existing.weather||null);
+  const [wxLoading,setWxLoading] = useState(false);
+  const [wxError,setWxError]   = useState("");
+  const [spotifyTracks,setSpotifyTracks] = useState(existing.spotifyTracks||[]);
+  const [spotifyLoading,setSpotifyLoading] = useState(false);
+  const [spotifyError,setSpotifyError]   = useState("");
+  const [podcastGenres,setPodcastGenres] = useState(existing.podcastGenres||[]);
+  const [podcastNote,setPodcastNote]     = useState(existing.podcastNote||"");
+  const [notes,setNotes]       = useState(existing.notes||"");
+  const [saved,setSaved]       = useState(false);
+  const debounce = useRef(null);
+
+  const toggle = (list,setList,item) =>
+    setList(list.includes(item)?list.filter(x=>x!==item):[...list,item]);
+
+  const fetchWeather = async (place) => {
+    if (!place.trim()){setWeather(null);setWxError("");return;}
+    setWxLoading(true);setWxError("");setWeather(null);
+    try {
+      const g = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(place)}&count=1&language=en`);
+      const gd = await g.json();
+      if (!gd.results?.length){setWxError("Location not found");setWxLoading(false);return;}
+      const {latitude,longitude,name,country}=gd.results[0];
+      const w = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m`);
+      const wd = await w.json();
+      const c = wd.current;
+      setWeather({temp:c.temperature_2m,humidity:c.relative_humidity_2m,code:c.weather_code,wind:c.wind_speed_10m,resolvedName:`${name}, ${country}`});
+    } catch {setWxError("Couldn't fetch weather");}
+    setWxLoading(false);
+  };
+
+  const loadSpotify = async () => {
+    if (!settings.spotifyToken){setSpotifyError("Add your Spotify token in Settings");return;}
+    setSpotifyLoading(true);setSpotifyError("");
+    try {
+      const tracks = await fetchSpotifyToday(settings.spotifyToken);
+      setSpotifyTracks(tracks);
+      if (!tracks.length) setSpotifyError("No tracks played yet today.");
+    } catch(e) {
+      setSpotifyError(e.message==="expired"?"Token expired — refresh it in Settings":"Couldn't connect to Spotify");
+    }
+    setSpotifyLoading(false);
+  };
+
+  const save = () => {
+    const entry={date:TODAY,mood,energy,stress,symptoms,activities,food,location,weather,
+      spotifyTracks,podcastGenres,podcastNote,notes,ts:Date.now()};
+    const newEntries=[entry,...entries.filter(e=>e.date!==TODAY)].sort((a,b)=>b.date.localeCompare(a.date));
+    setEntries(newEntries);
+    store.set("entries",newEntries);
+    setSaved(true); setTimeout(()=>setSaved(false),2000);
+  };
+
+  return (
+    <div>
+      <div style={{marginBottom:16}}>
+        <p style={{fontSize:13,color:"var(--text3)"}}>{new Date().toLocaleDateString("en-US",{weekday:"long",year:"numeric",month:"long",day:"numeric"})}</p>
+        <h2>Today's log</h2>
+      </div>
+
+      {/* Location */}
+      <div style={{marginBottom:14}}>
+        <p className="section-label">Where are you today?</p>
+        <input value={location} onChange={e=>{setLocation(e.target.value);setWeather(null);setWxError("");clearTimeout(debounce.current);debounce.current=setTimeout(()=>fetchWeather(e.target.value),900);}}
+          placeholder="City or place — weather auto-loads"/>
+        <div style={{marginTop:6,minHeight:24}}>
+          {wxLoading&&<span style={{fontSize:12,color:"var(--text3)"}}>Fetching weather...</span>}
+          {wxError&&<span style={{fontSize:12,color:"var(--red)"}}>{wxError}</span>}
+          {weather&&<div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+            <WeatherChip weather={weather}/>
+            <span style={{fontSize:11,color:"var(--text3)"}}>{weather.resolvedName}</span>
+          </div>}
+        </div>
+      </div>
+
+      {/* Mood / Energy / Stress */}
+      <div className="card">
+        <ThreeWay label="Mood"   value={mood}   onChange={setMood}/>
+        <ThreeWay label="Energy" value={energy} onChange={setEnergy}/>
+        <ThreeWay label="Stress" value={stress} onChange={setStress}/>
+        <p style={{fontSize:11,color:"var(--text3)",marginTop:2}}>Tap the same button again to clear</p>
+      </div>
+
+      {/* Symptoms */}
+      <div style={{marginBottom:14}}>
+        <p className="section-label">Physical symptoms</p>
+        <div className="tags">
+          {SYMPTOMS.map(s=>(
+            <span key={s} className={`tag ${symptoms.includes(s)?"active-red":""}`}
+              onClick={()=>toggle(symptoms,setSymptoms,s)}>{s}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* Activities */}
+      <div style={{marginBottom:14}}>
+        <p className="section-label">Activities & habits</p>
+        <div className="tags">
+          {ACTIVITIES.map(a=>(
+            <span key={a} className={`tag ${activities.includes(a)?"active-green":""}`}
+              onClick={()=>toggle(activities,setActivities,a)}>{a}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* Food */}
+      <div style={{marginBottom:14}}>
+        <p className="section-label">Food & drink</p>
+        <textarea value={food} onChange={e=>setFood(e.target.value)}
+          placeholder="What did you eat and drink today?" rows={3}/>
+      </div>
+
+      {/* Spotify */}
+      <div style={{marginBottom:14}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+          <p className="section-label" style={{margin:0}}>🎵 Music <span style={{fontWeight:400,color:"var(--text3)",fontSize:12}}>(Spotify)</span></p>
+          <button onClick={loadSpotify} disabled={spotifyLoading} style={{
+            fontSize:13,padding:"5px 12px",borderRadius:20,
+            border:"0.5px solid var(--border2)",background:"var(--bg)",
+            color:"var(--text2)",cursor:spotifyLoading?"default":"pointer",minHeight:32
+          }}>{spotifyLoading?"Loading...":"Fetch"}</button>
+        </div>
+        {spotifyError&&<p style={{fontSize:12,color:"var(--red)",marginBottom:6}}>{spotifyError}</p>}
+        {spotifyTracks.length>0&&(
+          <div className="card" style={{padding:"8px 10px",marginBottom:0}}>
+            {spotifyTracks.slice(0,5).map((t,i)=>(
+              <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",
+                borderBottom:i<Math.min(spotifyTracks.length,5)-1?"0.5px solid var(--border)":"none"}}>
+                <div style={{flex:1,overflow:"hidden"}}>
+                  <p style={{fontSize:13,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{t.name}</p>
+                  <p style={{fontSize:11,color:"var(--text3)"}}>{t.artist}</p>
+                </div>
+                {t.plays>1&&<span style={{fontSize:12,color:"#1DB954",marginLeft:8,flexShrink:0,alignSelf:"center"}}>×{t.plays}</span>}
+              </div>
+            ))}
+            {spotifyTracks.length>5&&<p style={{fontSize:11,color:"var(--text3)",marginTop:6}}>+{spotifyTracks.length-5} more tracks</p>}
+          </div>
+        )}
+      </div>
+
+      {/* Podcasts */}
+      <div style={{marginBottom:14}}>
+        <p className="section-label">🎙 Podcasts <span style={{fontWeight:400,color:"var(--text3)",fontSize:12}}>(log manually)</span></p>
+        <div className="tags" style={{marginBottom:8}}>
+          {PODCAST_GENRES.map(g=>(
+            <span key={g} className={`tag ${podcastGenres.includes(g)?"active-purple":""}`}
+              onClick={()=>toggle(podcastGenres,setPodcastGenres,g)}>{g}</span>
+          ))}
+        </div>
+        <input value={podcastNote} onChange={e=>setPodcastNote(e.target.value)}
+          placeholder="Specific show or note (e.g. 3 episodes of X...)"/>
+      </div>
+
+      {/* Notes */}
+      <div style={{marginBottom:20}}>
+        <p className="section-label">Notes</p>
+        <textarea value={notes} onChange={e=>setNotes(e.target.value)}
+          placeholder="Sleep quality, events, how you felt overall..." rows={3}/>
+      </div>
+
+      <button onClick={save} className={`btn-primary ${saved?"saved":""}`}>
+        {saved?"Saved ✓":"Save today's log"}
+      </button>
+    </div>
+  );
+}
+
+// ── History Tab ──────────────────────────────────────────────────────────────
+
+function HistoryTab({ entries }) {
+  const [selected,setSelected] = useState(null);
+
+  if (selected) {
+    const e = selected;
+    return (
+      <div>
+        <button className="back-btn" onClick={()=>setSelected(null)}>← Back</button>
+        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8,flexWrap:"wrap"}}>
+          <h3>{formatDate(e.date)}</h3>
+          {e.location&&<span style={{fontSize:12,color:"var(--text3)",padding:"2px 9px",borderRadius:10,border:"0.5px solid var(--border)"}}>{e.location}</span>}
+        </div>
+        {e.weather&&<div style={{marginBottom:12}}><WeatherChip weather={e.weather}/></div>}
+
+        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:14}}>
+          {[["Mood",e.mood],["Energy",e.energy],["Stress",e.stress]].map(([lbl,val])=>{
+            const opt=val!==null&&val!==undefined?RELATIVE.find(r=>r.value===val):null;
+            return (
+              <div key={lbl} className="stat">
+                <p className="stat-label">{lbl}</p>
+                <p className="stat-value" style={{fontSize:24,color:opt?.color||"var(--text3)"}}>{opt?opt.short:"—"}</p>
+                <p style={{fontSize:11,color:opt?.color||"var(--text3)"}}>{opt?.label||"Not logged"}</p>
+              </div>
+            );
+          })}
+        </div>
+
+        {e.symptoms?.length>0&&<div style={{marginBottom:12}}>
+          <p style={{fontSize:13,color:"var(--text3)",marginBottom:6}}>Symptoms</p>
+          <div className="tags">{e.symptoms.map(s=><span key={s} className="tag active-red" style={{cursor:"default"}}>{s}</span>)}</div>
+        </div>}
+        {e.activities?.length>0&&<div style={{marginBottom:12}}>
+          <p style={{fontSize:13,color:"var(--text3)",marginBottom:6}}>Activities</p>
+          <div className="tags">{e.activities.map(a=><span key={a} className="tag active-green" style={{cursor:"default"}}>{a}</span>)}</div>
+        </div>}
+        {e.spotifyTracks?.length>0&&<div style={{marginBottom:12}}>
+          <p style={{fontSize:13,color:"var(--text3)",marginBottom:6}}>🎵 Music ({e.spotifyTracks.length} tracks)</p>
+          <p style={{fontSize:13,color:"var(--text2)"}}>{e.spotifyTracks.slice(0,4).map(t=>t.name).join(", ")}{e.spotifyTracks.length>4?` +${e.spotifyTracks.length-4} more`:""}</p>
+        </div>}
+        {e.podcastGenres?.length>0&&<div style={{marginBottom:12}}>
+          <p style={{fontSize:13,color:"var(--text3)",marginBottom:6}}>🎙 Podcasts</p>
+          <div className="tags">{e.podcastGenres.map(g=><span key={g} className="tag active-purple" style={{cursor:"default"}}>{g}</span>)}</div>
+          {e.podcastNote&&<p style={{fontSize:13,marginTop:6,fontStyle:"italic",color:"var(--text2)"}}>{e.podcastNote}</p>}
+        </div>}
+        {e.food&&<div style={{marginBottom:12}}>
+          <p style={{fontSize:13,color:"var(--text3)",marginBottom:4}}>Food & drink</p>
+          <p style={{fontSize:14}}>{e.food}</p>
+        </div>}
+        {e.notes&&<div>
+          <p style={{fontSize:13,color:"var(--text3)",marginBottom:4}}>Notes</p>
+          <p style={{fontSize:14,fontStyle:"italic"}}>{e.notes}</p>
+        </div>}
+      </div>
+    );
+  }
+
+  if (!entries.length) return (
+    <div style={{textAlign:"center",padding:"60px 0",color:"var(--text3)"}}>No entries yet — start logging today!</div>
+  );
+
+  const moodUps=entries.filter(e=>e.mood===1).length;
+  const moodDowns=entries.filter(e=>e.mood===-1).length;
+  const locations=[...new Set(entries.map(e=>e.location).filter(Boolean))];
+
+  return (
+    <div>
+      <div className="stat-grid">
+        <div className="stat"><p className="stat-label">Entries</p><p className="stat-value">{entries.length}</p></div>
+        <div className="stat"><p className="stat-label">Better days</p><p className="stat-value" style={{color:"var(--green)"}}>{moodUps}</p></div>
+        <div className="stat"><p className="stat-label">Harder days</p><p className="stat-value" style={{color:"var(--red)"}}>{moodDowns}</p></div>
+      </div>
+      {locations.length>0&&(
+        <div style={{marginBottom:12,display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}>
+          <span style={{fontSize:12,color:"var(--text3)"}}>Places:</span>
+          {locations.map(l=><span key={l} style={{fontSize:12,padding:"2px 9px",borderRadius:10,border:"0.5px solid var(--border)",color:"var(--text2)"}}>{l}</span>)}
+        </div>
+      )}
+      {entries.map(e=>(
+        <div key={e.date} className="entry-card" onClick={()=>setSelected(e)}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}>
+            <div style={{display:"flex",alignItems:"center",gap:7}}>
+              <span style={{fontSize:14,fontWeight:500}}>{formatDate(e.date)}</span>
+              {e.location&&<span style={{fontSize:11,color:"var(--text3)",padding:"1px 7px",borderRadius:10,border:"0.5px solid var(--border)"}}>{e.location}</span>}
+            </div>
+            {e.weather&&<span style={{fontSize:13}}>{wmoEmoji(e.weather.code)} {Math.round(e.weather.temp)}°C</span>}
+          </div>
+          <div style={{display:"flex",gap:10,marginBottom:5,flexWrap:"wrap"}}>
+            {[["Mood",e.mood],["Energy",e.energy],["Stress",e.stress]].map(([lbl,val])=>{
+              const opt=val!==null&&val!==undefined?RELATIVE.find(r=>r.value===val):null;
+              return <span key={lbl} style={{fontSize:12,color:opt?.color||"var(--text3)"}}>
+                {lbl}: {opt?opt.short+" "+opt.label:"—"}
+              </span>;
+            })}
+          </div>
+          <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+            {e.symptoms?.slice(0,3).map(s=><span key={s} style={{fontSize:11,padding:"2px 7px",borderRadius:10,background:"var(--red-light)",color:"var(--red)"}}>{s}</span>)}
+            {e.podcastGenres?.slice(0,2).map(g=><span key={g} style={{fontSize:11,padding:"2px 7px",borderRadius:10,background:"var(--purple-light)",color:"var(--purple)"}}>{g}</span>)}
+            {e.spotifyTracks?.length>0&&<span style={{fontSize:11,padding:"2px 7px",borderRadius:10,background:"var(--green-light)",color:"var(--green-text)"}}>🎵 {e.spotifyTracks.length}</span>}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Insights Tab ─────────────────────────────────────────────────────────────
+
+function InsightsTab({ entries, settings }) {
+  const [insight,setInsight] = useState("");
+  const [loading,setLoading] = useState(false);
+  const [error,setError]     = useState("");
+
+  const podcastBinges = (() => {
+    const result = {};
+    PODCAST_GENRES.forEach(g => {
+      let streak=0, max=0;
+      entries.forEach(e => { if(e.podcastGenres?.includes(g)){streak++;max=Math.max(max,streak);}else streak=0; });
+      if (max>=2) result[g]=max;
+    });
+    return Object.entries(result).sort((a,b)=>b[1]-a[1]);
+  })();
+
+  const topSymptoms = (() => {
+    const c={};
+    entries.forEach(e=>e.symptoms?.forEach(s=>{c[s]=(c[s]||0)+1;}));
+    return Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  })();
+
+  const topPodcasts = (() => {
+    const c={};
+    entries.forEach(e=>e.podcastGenres?.forEach(g=>{c[g]=(c[g]||0)+1;}));
+    return Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  })();
+
+  const moodStreak = (() => {
+    let s=0; for(const e of entries){if(e.mood===1)s++;else break;} return s;
+  })();
+
+  const analyze = async () => {
+    if (!settings.anthropicKey) { setError("Add your Anthropic API key in Settings ⚙"); return; }
+    if (entries.length<2) { setError("Log at least 2 days to get insights."); return; }
+    setLoading(true); setInsight(""); setError("");
+
+    const recent = entries.slice(0,30);
+    const summary = recent.map(e => {
+      const music = e.spotifyTracks?.length ? `music: ${e.spotifyTracks.slice(0,3).map(t=>`${t.name}${t.plays>1?` ×${t.plays}`:""}`).join(", ")}${e.spotifyTracks.length>3?` +${e.spotifyTracks.length-3} more`:""}` : null;
+      const pods = e.podcastGenres?.length ? `podcasts (${e.podcastGenres.join(", ")})${e.podcastNote?` — ${e.podcastNote}`:""}` : null;
+      return `${e.date}${e.location?` [${e.location}]`:""}${e.weather?` {${Math.round(e.weather.temp)}°C, ${wmoDesc(e.weather.code)}}`:""}: mood=${relLabel(e.mood)}, energy=${relLabel(e.energy)}, stress=${relLabel(e.stress)}`+
+        (e.symptoms?.length?`, symptoms: ${e.symptoms.join(", ")}`:"")+
+        (e.activities?.length?`, activities: ${e.activities.join(", ")}`:"")+
+        (music?`, ${music}`:"")+
+        (pods?`, ${pods}`:"")+
+        (e.food?`, food: ${e.food}`:"")+
+        (e.notes?`, notes: "${e.notes}"`:"");
+    }).join("\n");
+
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method:"POST",
+        headers:{"Content-Type":"application/json","x-api-key":settings.anthropicKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+        body:JSON.stringify({
+          model:"claude-sonnet-4-20250514", max_tokens:1000,
+          system:`You are a personal wellness analyst. The user logs daily health as Better/Same/Worse vs the previous day.
+Entries include location, weather, mood/energy/stress, symptoms, activities, Spotify music, podcast genres, food, notes.
+
+KEY INSIGHT: This user specifically uses podcast bingeing as a stress signal — listening to the same genre for multiple consecutive days often signals sustained stress or anxiety. Watch carefully for this pattern and highlight it when present. Also note shifts in music listening volume or genre.
+
+Analyse patterns warmly, specifically, and practically. Use brief headers.
+Cover: (1) mood/energy/stress trends, (2) media consumption as emotional signal especially podcast binges, (3) correlations with weather/location/activity/food, (4) 1-2 gentle concrete suggestions. Under 350 words.`,
+          messages:[{role:"user",content:`My health journal (up to 30 days):\n\n${summary}\n\nPlease analyse my patterns.`}]
+        })
+      });
+      const data = await res.json();
+      if (data.error) { setError(`API error: ${data.error.message}`); setLoading(false); return; }
+      setInsight(data.content?.[0]?.text||"No response.");
+    } catch(e) { setError("Couldn't connect. Check your API key and internet connection."); }
+    setLoading(false);
+  };
+
+  return (
+    <div>
+      {moodStreak>=2&&<div className="streak-alert">🌱 {moodStreak} days in a row feeling better than the day before</div>}
+      {podcastBinges.length>0&&(
+        <div className="binge-alert">
+          🎙 Podcast binge: {podcastBinges.map(([g,s])=><span key={g}><strong>{g}</strong> {s} days in a row </span>)}
+        </div>
+      )}
+
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
+        {topSymptoms.length>0&&(
+          <div className="card" style={{marginBottom:0}}>
+            <p style={{fontSize:12,color:"var(--text3)",marginBottom:8}}>Top symptoms</p>
+            {topSymptoms.map(([s,n])=>(
+              <div key={s} style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                <span style={{fontSize:12}}>{s}</span><span style={{fontSize:12,color:"var(--red)"}}>{n}×</span>
+              </div>
+            ))}
+          </div>
+        )}
+        {topPodcasts.length>0&&(
+          <div className="card" style={{marginBottom:0}}>
+            <p style={{fontSize:12,color:"var(--text3)",marginBottom:8}}>🎙 Top genres</p>
+            {topPodcasts.map(([g,n])=>(
+              <div key={g} style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                <span style={{fontSize:12}}>{g}</span><span style={{fontSize:12,color:"var(--purple)"}}>{n}×</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <button onClick={analyze} disabled={loading} className="btn-secondary" style={{marginBottom:14,fontSize:14}}>
+        {loading?"Analysing...":entries.length<2?"Log more days to unlock insights":`Analyse ${Math.min(entries.length,30)} days with AI`}
+      </button>
+
+      {error&&<p style={{fontSize:13,color:"var(--red)",textAlign:"center",marginBottom:12}}>{error}</p>}
+      {insight&&(
+        <div className="insight-box">
+          <p style={{fontSize:12,color:"var(--text3)",marginBottom:10}}>AI analysis</p>
+          <div style={{fontSize:14,lineHeight:1.75,whiteSpace:"pre-wrap"}}>{insight}</div>
+        </div>
+      )}
+      {!entries.length&&!insight&&(
+        <div style={{textAlign:"center",padding:"40px 0",color:"var(--text3)",fontSize:14}}>
+          Start logging daily to unlock insights.
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── App root ─────────────────────────────────────────────────────────────────
+
+function App() {
+  const [tab,setTab]           = useState("log");
+  const [entries,setEntries]   = useState([]);
+  const [settings,setSettings] = useState({anthropicKey:"",spotifyToken:""});
+  const [showSettings,setShowSettings] = useState(false);
+  const [loaded,setLoaded]     = useState(false);
+
+  useEffect(()=>{
+    setEntries(store.get("entries")||[]);
+    setSettings(store.get("settings")||{anthropicKey:"",spotifyToken:""});
+    setLoaded(true);
+  },[]);
+
+  const saveSettings = (s) => {
+    const merged={...settings,...s};
+    setSettings(merged); store.set("settings",merged); setShowSettings(false);
+  };
+
+  if (!loaded) return <div style={{textAlign:"center",padding:60,color:"var(--text3)"}}>Loading...</div>;
+
+  const tabs=[
+    {id:"log",   icon:"✏",  label:"Log"},
+    {id:"history",icon:"📅", label:`History${entries.length?` (${entries.length})`:""}`},
+    {id:"insights",icon:"✦", label:"Insights"},
+    {id:"settings-btn",icon:"⚙",label:"Settings"},
+  ];
+
+  return (
+    <>
+      {showSettings&&<SettingsModal settings={settings} onSave={saveSettings} onClose={()=>setShowSettings(false)}/>}
+
+      {tab==="log"      &&<LogTab entries={entries} setEntries={setEntries} settings={settings}/>}
+      {tab==="history"  &&<HistoryTab entries={entries}/>}
+      {tab==="insights" &&<InsightsTab entries={entries} settings={settings}/>}
+
+      <nav className="tab-bar">
+        {tabs.map(t=>(
+          <button key={t.id} className={`tab-btn ${tab===t.id&&t.id!=="settings-btn"?"active":""}`}
+            onClick={()=>t.id==="settings-btn"?setShowSettings(true):setTab(t.id)}>
+            <span className="icon">{t.icon}</span>
+            <span>{t.label}</span>
+          </button>
+        ))}
+      </nav>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
