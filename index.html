@@ -449,12 +449,35 @@ function LogTab({ entries, setEntries, settings }) {
         </div>
       </div>
 
-      {/* Food */}
+      {/* Food + photo analysis */}
       <div style={{marginBottom:14}}>
-        <p className="section-label">Food & drink</p>
-        <textarea value={food} onChange={e=>setFood(e.target.value)}
-          placeholder="What did you eat and drink today?" rows={3}/>
-      </div>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:7}}>
+          <p className="section-label" style={{margin:0}}>Food & drink</p>
+          <label style={{display:"inline-flex",alignItems:"center",gap:5,fontSize:13,
+            color:foodAnalysing?"var(--text3)":"var(--green-text)",cursor:"pointer",
+            padding:"5px 12px",borderRadius:20,
+            border:`1px solid ${foodAnalysing?"var(--border)":"var(--green)"}`,
+            background:foodAnalysing?"var(--bg2)":"var(--green-light)"}}>
+            {foodAnalysing?"Analysing...":"📷 Photo"}
+            <input type="file" accept="image/*" onChange={handleFoodPhoto}
+              style={{display:"none"}} disabled={foodAnalysing}/>
+          </label>
+        </div>
+        {foodPhotoError&&<p style={{fontSize:12,color:"var(--red)",marginBottom:6}}>{foodPhotoError}</p>}
+        {foodPhotoB64&&!foodAnalysing&&(
+          <div style={{position:"relative",marginBottom:8}}>
+            <img src={`data:image/jpeg;base64,${foodPhotoB64}`}
+              style={{width:"100%",maxHeight:200,objectFit:"cover",borderRadius:"var(--radius-md)",display:"block"}}/>
+            <button onClick={()=>setFoodPhotoB64(null)} style={{position:"absolute",top:8,right:8,
+              background:"rgba(0,0,0,0.55)",border:"none",color:"#fff",borderRadius:"50%",
+              width:26,height:26,cursor:"pointer",fontSize:14}}>✕</button>
+          </div>
+        )}
+  {foodAnalysing&&<div style={{padding:12,background:"var(--bg2)",borderRadius:"var(--radius-md)",
+    marginBottom:8,fontSize:13,color:"var(--text3)"}}>Analysing photo with AI...</div>}
+  <textarea value={food} onChange={e=>setFood(e.target.value)}
+    placeholder="What did you eat today? Or tap 📷 to analyse a photo." rows={3}/>
+</div>
 
       {/* Spotify */}
       <div style={{marginBottom:14}}>
