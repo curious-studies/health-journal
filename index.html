@@ -1,1222 +1,1164 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="Health Journal" />
-  <meta name="theme-color" content="#0f7a6e" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="icon_v2.svg" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="apple-mobile-web-app-title" content="Health Journal"/>
+  <meta name="theme-color" content="#0f7a6e"/>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="apple-touch-icon" href="icon-192.png"/>
   <title>Health Journal</title>
   <style>
     :root {
-      --bg: #ffffff;
-      --bg2: #f5f5f4;
-      --bg3: #eeece9;
-      --text: #1c1917;
-      --text2: #57534e;
-      --text3: #a8a29e;
-      --border: #e7e5e4;
-      --border2: #d6d3d1;
-      --green: #0f7a6e;
-      --green-dark: #0f6e56;
-      --green-light: #e1f5ee;
-      --green-text: #0f6e56;
-      --red: #a32d2d;
-      --red-light: #fcebeb;
-      --purple: #7c3aed;
-      --purple-light: #ede9fe;
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 14px;
-      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --safe-bottom: env(safe-area-inset-bottom, 0px);
-      --safe-top: env(safe-area-inset-top, 0px);
+      --bg:#ffffff;--bg2:#f5f5f4;--bg3:#eeece9;
+      --text:#1c1917;--text2:#57534e;--text3:#a8a29e;
+      --border:#e7e5e4;--border2:#d6d3d1;
+      --green:#0f7a6e;--green-dark:#0f6e56;--green-light:#e1f5ee;--green-text:#0f6e56;
+      --red:#a32d2d;--red-light:#fcebeb;
+      --purple:#7c3aed;--purple-light:#ede9fe;
+      --amber:#92400e;--amber-light:#fef3c7;
+      --pink:#e8b4c8;--pink-dark:#d4849a;--pink-light:#fce8ef;
+      --radius-sm:6px;--radius-md:10px;--radius-lg:14px;
+      --font:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      --safe-bottom:env(safe-area-inset-bottom,0px);
+      --safe-top:env(safe-area-inset-top,0px);
     }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #1c1917;
-        --bg2: #292524;
-        --bg3: #312e2b;
-        --text: #fafaf9;
-        --text2: #a8a29e;
-        --text3: #78716c;
-        --border: #2e2b28;
-        --border2: #44403c;
-        --green-light: #0d3b32;
-        --green-text: #34d399;
-        --red-light: #3b1212;
-        --purple-light: #2e1b5e;
+    @media(prefers-color-scheme:dark){
+      :root{
+        --bg:#1c1917;--bg2:#292524;--bg3:#312e2b;
+        --text:#fafaf9;--text2:#a8a29e;--text3:#78716c;
+        --border:#2e2b28;--border2:#44403c;
+        --green-light:#0d3b32;--green-text:#34d399;
+        --red-light:#3b1212;--purple-light:#2e1b5e;--amber-light:#3b2a0a;--pink-light:#3b1a2e;
       }
     }
-
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font);
-    }
-
-    body {
-      padding-top: var(--safe-top);
-    }
-
-    #root {
-      max-width: 500px;
-      margin: 0 auto;
-      padding: 16px 16px calc(80px + var(--safe-bottom));
-      min-height: 100vh;
-    }
-
-    input,
-    textarea,
-    button {
-      font-family: var(--font);
-    }
-
-    input,
-    textarea {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: var(--radius-md);
-      border: 0.5px solid var(--border);
-      background: var(--bg);
-      color: var(--text);
-      font-size: 15px;
-      outline: none;
-    }
-
-    input:focus,
-    textarea:focus {
-      border-color: var(--green);
-    }
-
-    textarea {
-      resize: vertical;
-    }
-
-    .tab-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--bg);
-      border-top: 0.5px solid var(--border);
-      display: flex;
-      padding-bottom: var(--safe-bottom);
-      z-index: 50;
-    }
-
-    .tab-btn {
-      flex: 1;
-      padding: 12px 0;
-      background: none;
-      border: none;
-      font-size: 12px;
-      cursor: pointer;
-      color: var(--text3);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      transition: color 0.12s;
-    }
-
-    .tab-btn.active {
-      color: var(--green);
-    }
-
-    .tab-btn .icon {
-      font-size: 20px;
-      line-height: 1;
-    }
-
-    .section-label {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text2);
-      margin: 0 0 8px;
-    }
-
-    .card {
-      background: var(--bg2);
-      border-radius: var(--radius-lg);
-      padding: 14px;
-      margin-bottom: 14px;
-    }
-
-    .tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-    }
-
-    .tag {
-      padding: 6px 12px;
-      font-size: 13px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      background: var(--bg);
-      color: var(--text2);
-      cursor: pointer;
-      transition: all 0.12s;
-      -webkit-user-select: none;
-      user-select: none;
-    }
-
-    .tag.active-green {
-      border-color: var(--green);
-      background: var(--green-light);
-      color: var(--green-text);
-      font-weight: 500;
-    }
-
-    .tag.active-red {
-      border-color: var(--red);
-      background: var(--red-light);
-      color: var(--red);
-      font-weight: 500;
-    }
-
-    .tag.active-purple {
-      border-color: var(--purple);
-      background: var(--purple-light);
-      color: var(--purple);
-      font-weight: 500;
-    }
-
-    .stat-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
-    .stat {
-      background: var(--bg2);
-      border-radius: var(--radius-md);
-      padding: 10px 12px;
-    }
-
-    .stat-label {
-      font-size: 11px;
-      color: var(--text3);
-      margin: 0;
-    }
-
-    .stat-value {
-      font-size: 22px;
-      font-weight: 500;
-      margin: 4px 0 0;
-    }
-
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 100;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-    }
-
-    .modal {
-      width: 100%;
-      max-width: 500px;
-      background: var(--bg);
-      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-      padding: 20px 20px calc(20px + var(--safe-bottom));
-    }
-
-    .btn-primary {
-      width: 100%;
-      padding: 13px;
-      border-radius: var(--radius-md);
-      border: none;
-      background: var(--green);
-      color: #fff;
-      font-size: 15px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .btn-primary:active {
-      background: var(--green-dark);
-    }
-
-    .btn-primary.saved {
-      background: var(--green-dark);
-    }
-
-    .btn-secondary {
-      width: 100%;
-      padding: 11px;
-      border-radius: var(--radius-md);
-      border: 0.5px solid var(--border2);
-      background: var(--bg);
-      color: var(--text);
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .entry-card {
-      padding: 12px 14px;
-      border-radius: var(--radius-lg);
-      border: 0.5px solid var(--border);
-      background: var(--bg);
-      cursor: pointer;
-      margin-bottom: 8px;
-      transition: border-color 0.12s;
-    }
-
-    .entry-card:active {
-      border-color: var(--border2);
-    }
-
-    .weather-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 12px;
-      padding: 3px 9px;
-      border-radius: 10px;
-      border: 0.5px solid var(--border);
-      background: var(--bg2);
-      color: var(--text2);
-    }
-
-    .binge-alert {
-      padding: 10px 14px;
-      border-radius: var(--radius-md);
-      background: var(--purple-light);
-      border: 0.5px solid #c4b5fd;
-      font-size: 13px;
-      color: var(--purple);
-      margin-bottom: 14px;
-    }
-
-    .streak-alert {
-      padding: 10px 14px;
-      border-radius: var(--radius-md);
-      background: var(--green-light);
-      border: 0.5px solid #9fe1cb;
-      font-size: 13px;
-      color: var(--green-text);
-      margin-bottom: 14px;
-    }
-
-    .insight-box {
-      border-radius: var(--radius-lg);
-      border: 0.5px solid var(--border);
-      padding: 14px 16px;
-      background: var(--bg);
-    }
-
-    .back-btn {
-      background: none;
-      border: none;
-      font-size: 14px;
-      color: var(--text2);
-      cursor: pointer;
-      padding: 0 0 16px;
-    }
-
-    h2 {
-      margin: 4px 0 0;
-      font-size: 20px;
-      font-weight: 500;
-    }
-
-    h3 {
-      margin: 0;
-      font-size: 17px;
-      font-weight: 500;
-    }
-
-    p {
-      margin: 0;
-    }
-
-    a {
-      color: var(--green);
-    }
-
-    .btn-ghost {
-      padding: 7px 14px;
-      border-radius: var(--radius-md);
-      border: 0.5px solid var(--border);
-      background: var(--bg);
-      color: var(--text2);
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.12s;
-      white-space: nowrap;
-    }
-
-    .btn-ghost.active {
-      border-color: var(--green);
-      background: var(--green-light);
-      color: var(--green-text);
-      font-weight: 500;
-    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--font);}
+    body{padding-top:var(--safe-top);}
+    #root{max-width:500px;margin:0 auto;padding:16px 16px calc(84px + var(--safe-bottom));min-height:100vh;}
+    input,textarea,button{font-family:var(--font);}
+    input,textarea{width:100%;padding:10px 12px;border-radius:var(--radius-md);border:0.5px solid var(--border);background:var(--bg);color:var(--text);font-size:15px;outline:none;}
+    input:focus,textarea:focus{border-color:var(--green);}
+    textarea{resize:vertical;}
+    input[type="time"],input[type="number"]{width:auto;}
+    .tab-bar{position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:0.5px solid var(--border);display:flex;padding-bottom:var(--safe-bottom);z-index:50;}
+    .tab-btn{flex:1;padding:10px 0;background:none;border:none;font-size:11px;cursor:pointer;color:var(--text3);display:flex;flex-direction:column;align-items:center;gap:3px;transition:color 0.12s;}
+    .tab-btn.active{color:var(--green);}
+    .section-label{font-size:13px;font-weight:500;color:var(--text2);margin:0 0 8px;}
+    .card{background:var(--bg2);border-radius:var(--radius-lg);padding:14px;margin-bottom:14px;}
+    .tags{display:flex;flex-wrap:wrap;gap:7px;}
+    .tag{padding:6px 12px;font-size:13px;border-radius:20px;border:1px solid var(--border);background:var(--bg);color:var(--text2);cursor:pointer;transition:all 0.12s;-webkit-user-select:none;user-select:none;}
+    .tag.active-green{border-color:var(--green);background:var(--green-light);color:var(--green-text);font-weight:500;}
+    .tag.active-red{border-color:var(--red);background:var(--red-light);color:var(--red);font-weight:500;}
+    .tag.active-purple{border-color:var(--purple);background:var(--purple-light);color:var(--purple);font-weight:500;}
+    .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+    .stat{background:var(--bg2);border-radius:var(--radius-md);padding:10px 12px;}
+    .stat-label{font-size:11px;color:var(--text3);margin:0;}
+    .stat-value{font-size:20px;font-weight:500;margin:4px 0 0;}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;display:flex;align-items:flex-end;justify-content:center;}
+    .modal{width:100%;max-width:500px;background:var(--bg);border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:20px 20px calc(20px + var(--safe-bottom));max-height:90vh;overflow-y:auto;}
+    .btn-primary{width:100%;padding:13px;border-radius:var(--radius-md);border:none;background:var(--green);color:#fff;font-size:15px;font-weight:500;cursor:pointer;transition:background 0.2s;}
+    .btn-primary:active{background:var(--green-dark);}
+    .btn-secondary{width:100%;padding:11px;border-radius:var(--radius-md);border:0.5px solid var(--border2);background:var(--bg);color:var(--text);font-size:14px;cursor:pointer;transition:all 0.2s;}
+    .btn-ghost{padding:7px 14px;border-radius:var(--radius-md);border:0.5px solid var(--border);background:var(--bg);color:var(--text2);font-size:13px;cursor:pointer;transition:all 0.12s;white-space:nowrap;}
+    .btn-ghost.active{border-color:var(--green);background:var(--green-light);color:var(--green-text);font-weight:500;}
+    .entry-card{padding:12px 14px;border-radius:var(--radius-lg);border:0.5px solid var(--border);background:var(--bg);cursor:pointer;margin-bottom:8px;transition:border-color 0.12s;}
+    .entry-card:active{border-color:var(--border2);}
+    .weather-chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:3px 9px;border-radius:10px;border:0.5px solid var(--border);background:var(--bg2);color:var(--text2);}
+    .binge-alert{padding:10px 14px;border-radius:var(--radius-md);background:var(--purple-light);border:0.5px solid #c4b5fd;font-size:13px;color:var(--purple);margin-bottom:12px;}
+    .streak-alert{padding:10px 14px;border-radius:var(--radius-md);background:var(--green-light);border:0.5px solid #9fe1cb;font-size:13px;color:var(--green-text);margin-bottom:12px;}
+    .insight-box{border-radius:var(--radius-lg);border:0.5px solid var(--border);padding:14px 16px;background:var(--bg);margin-bottom:14px;}
+    .back-btn{background:none;border:none;font-size:14px;color:var(--text2);cursor:pointer;padding:0 0 16px;}
+    .photo-preview{width:100%;max-height:200px;object-fit:cover;border-radius:var(--radius-md);margin-bottom:8px;display:block;}
+    .toggle-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;}
+    .toggle{position:relative;width:44px;height:26px;cursor:pointer;flex-shrink:0;}
+    .toggle input{opacity:0;width:0;height:0;}
+    .toggle-slider{position:absolute;inset:0;background:var(--border2);border-radius:13px;transition:0.2s;}
+    .toggle-slider:before{content:"";position:absolute;height:20px;width:20px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:0.2s;}
+    input:checked + .toggle-slider{background:var(--green);}
+    input:checked + .toggle-slider:before{transform:translateX(18px);}
+    .symptom-streak{background:#fff8ec;border:0.5px solid #f59e0b;border-radius:var(--radius-md);padding:10px 12px;margin-bottom:10px;}
+    h2{margin:4px 0 0;font-size:20px;font-weight:500;}
+    h3{margin:0;font-size:17px;font-weight:500;}
+    p{margin:0;}
+    a{color:var(--green);}
+    hr{border:none;border-top:0.5px solid var(--border);margin:20px 0;}
   </style>
 </head>
-
 <body>
-  <div id="root"></div>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
 
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+// ── Lucide icon paths (hardcoded SVG inner HTML) ──────────────────────────────
+const ICONS = {
+  pencilLine:'<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>',
+  calendar:'<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
+  sparkles:'<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>',
+  settings2:'<path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/>',
+  mapPin:'<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>',
+  music:'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+  mic:'<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/>',
+  camera:'<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>',
+  bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+  download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
+  upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>',
+  key:'<path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>',
+  clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  plus:'<path d="M5 12h14"/><path d="M12 5v14"/>',
+  activity:'<path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/>',
+  rotateCcw:'<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
+  footprints:'<path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.34v2.16"/><path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.34v2.16"/><path d="M2 20h6"/><path d="M16 20h6"/>',
+};
 
-  <script type="text/babel">
-    const { useState, useEffect, useRef } = React;
+function Icon({name,size=20,color="currentColor",strokeWidth=2,style={}}){
+  const d=ICONS[name];
+  if(!d)return null;
+  return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24"
+    fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round"
+    style={style} dangerouslySetInnerHTML={{__html:d}}/>;
+}
 
-    // ── Constants ────────────────────────────────────────────────────────────────
+// ── Constants ────────────────────────────────────────────────────────────────
+const SYMPTOMS=["headache","fatigue","nausea","back pain","stomach ache","sore throat","runny nose","anxiety","insomnia","dizziness","muscle pain","eye strain","chest tightness","low appetite","bloating"];
+const ACTIVITIES=["walking","running","gym","yoga","cycling","swimming","stretching","meditation","socialising","reading","cooking","work-heavy","good sleep","poor sleep"];
+const PODCAST_GENRES=["true crime","self-help","comedy","news","tech","business","health","history","science","politics","drama","spirituality","mindfulness","finance","sports"];
+const PMS_TAGS=["cramps","bloating","constipation","breast tenderness","mood swings","lower back pain","fatigue"];
+const PERIOD_LEVELS=[
+  {id:"none",   label:"None",    color:"var(--border2)", dot:"var(--bg3)"},
+  {id:"spotting",label:"Spotting",color:"#fda4af",       dot:"#fda4af"},
+  {id:"light",  label:"Light",   color:"#fb7185",        dot:"#fb7185"},
+  {id:"medium", label:"Medium",  color:"#f43f5e",        dot:"#f43f5e"},
+  {id:"heavy",  label:"Heavy",   color:"#be123c",        dot:"#be123c"},
+];
+const RELATIVE=[
+  {value:1, label:"Better",        short:"↑",color:"#0f6e56"},
+  {value:0, label:"About the same",short:"—",color:"#888780"},
+  {value:-1,label:"Worse",         short:"↓",color:"#a32d2d"},
+];
+const DATE_FORMATS=["default","yyyy.mm.dd","yyyy-mm-dd","dd/mm/yyyy","mm/dd/yyyy"];
+const TODAY=new Date().toISOString().split("T")[0];
 
-    const SYMPTOMS = ["headache", "fatigue", "nausea", "back pain", "stomach ache", "sore throat", "runny nose", "anxiety", "insomnia", "dizziness", "muscle pain", "eye strain", "chest tightness", "low appetite", "bloating"];
-    const ACTIVITIES = ["walking", "running", "gym", "yoga", "cycling", "swimming", "stretching", "meditation", "socialising", "reading", "cooking", "work-heavy", "good sleep", "poor sleep"];
-    const PODCAST_GENRES = ["true crime", "self-help", "comedy", "news", "tech", "business", "health", "history", "science", "politics", "drama", "spirituality", "mindfulness", "finance", "sports"];
-    const RELATIVE = [
-      { value: 1, label: "Better", short: "↑", color: "#0f6e56" },
-      { value: 0, label: "About the same", short: "—", color: "#888780" },
-      { value: -1, label: "Worse", short: "↓", color: "#a32d2d" },
-    ];
+// ── Storage ──────────────────────────────────────────────────────────────────
+const store={
+  get:(k)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch{return null;}},
+  set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}},
+};
 
-    const TODAY = new Date().toISOString().split("T")[0];
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function wmoDesc(c){if(c===0)return"Clear";if(c<=2)return"Partly cloudy";if(c===3)return"Overcast";if(c<=49)return"Foggy";if(c<=59)return"Drizzle";if(c<=69)return"Rain";if(c<=79)return"Snow";if(c<=82)return"Rain showers";if(c<=86)return"Snow showers";if(c<=99)return"Thunderstorm";return"";}
+function wmoEmoji(c){if(c===0)return"☀";if(c<=2)return"⛅";if(c===3)return"☁";if(c<=49)return"🌫";if(c<=69)return"🌧";if(c<=79)return"❄";if(c<=86)return"🌨";if(c<=99)return"⛈";return"🌡";}
+function relLabel(v){if(v===null||v===undefined)return"not logged";return RELATIVE.find(r=>r.value===v)?.label||"—";}
 
-    // ── Storage (localStorage) ───────────────────────────────────────────────────
+function formatDateFn(dateStr,fmt="default"){
+  const d=new Date(dateStr+"T00:00:00");
+  const y=d.getFullYear(),mo=String(d.getMonth()+1).padStart(2,"0"),day=String(d.getDate()).padStart(2,"0");
+  const ms=d.toLocaleDateString("en-US",{month:"short"}),wd=d.toLocaleDateString("en-US",{weekday:"short"});
+  switch(fmt){
+    case"yyyy.mm.dd":return`${y}.${mo}.${day}`;
+    case"yyyy-mm-dd":return`${y}-${mo}-${day}`;
+    case"dd/mm/yyyy":return`${day}/${mo}/${y}`;
+    case"mm/dd/yyyy":return`${mo}/${day}/${y}`;
+    default:return`${wd}, ${ms} ${day}`;
+  }
+}
 
-    const store = {
-      get: (key) => { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; } catch { return null; } },
-      set: (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)); } catch { } },
-    };
+function moonPhase(dateStr){
+  const d=new Date(dateStr+"T00:00:00");
+  const known=new Date("2000-01-06T00:00:00");
+  const lunation=29.53058867;
+  let phase=(((d-known)/(1000*60*60*24))%lunation+lunation)%lunation;
+  if(phase<1.85||phase>=27.68)return{name:"New Moon",emoji:"🌑"};
+  if(phase<7.38)return{name:"Waxing Crescent",emoji:"🌒"};
+  if(phase<9.22)return{name:"First Quarter",emoji:"🌓"};
+  if(phase<14.77)return{name:"Waxing Gibbous",emoji:"🌔"};
+  if(phase<16.61)return{name:"Full Moon",emoji:"🌕"};
+  if(phase<22.15)return{name:"Waning Gibbous",emoji:"🌖"};
+  if(phase<23.99)return{name:"Last Quarter",emoji:"🌗"};
+  return{name:"Waning Crescent",emoji:"🌘"};
+}
 
-    // ── Helpers ──────────────────────────────────────────────────────────────────
+function fileToBase64(file){
+  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(",")[1]);r.onerror=()=>rej(new Error("failed"));r.readAsDataURL(file);});
+}
 
-    function wmoDesc(c) {
-      if (c === 0) return "Clear sky"; if (c <= 2) return "Partly cloudy"; if (c === 3) return "Overcast";
-      if (c <= 49) return "Foggy"; if (c <= 59) return "Drizzle"; if (c <= 69) return "Rain";
-      if (c <= 79) return "Snow"; if (c <= 82) return "Rain showers"; if (c <= 86) return "Snow showers";
-      if (c <= 99) return "Thunderstorm"; return "";
-    }
-    function wmoEmoji(c) {
-      if (c === 0) return "☀"; if (c <= 2) return "⛅"; if (c === 3) return "☁";
-      if (c <= 49) return "🌫"; if (c <= 69) return "🌧"; if (c <= 79) return "❄";
-      if (c <= 86) return "🌨"; if (c <= 99) return "⛈"; return "🌡";
-    }
-    function relLabel(v) {
-      if (v === null || v === undefined) return "not logged";
-      return RELATIVE.find(r => r.value === v)?.label || "—";
-    }
-    function formatDate(d) {
-      return new Date(d + "T00:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
-    }
-    function getWeekRange(offset = 0) {
-      const now = new Date();
-      const monday = new Date(now);
-      monday.setDate(now.getDate() - ((now.getDay() + 6) % 7) + offset * 7); monday.setHours(0, 0, 0, 0);
-      const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
-      return {
-        start: monday.toISOString().split("T")[0],
-        end: sunday.toISOString().split("T")[0],
-        label: offset === 0 ? "This week" : offset === -1 ? "Last week" : `Week of ${monday.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`,
-      };
-    }
-    function getMonthRange(offset = 0) {
-      const now = new Date();
-      const first = new Date(now.getFullYear(), now.getMonth() + offset, 1);
-      const last = new Date(now.getFullYear(), now.getMonth() + offset + 1, 0);
-      return {
-        start: first.toISOString().split("T")[0],
-        end: last.toISOString().split("T")[0],
-        label: offset === 0 ? "This month" : offset === -1 ? "Last month" : first.toLocaleDateString("en-US", { month: "long", year: "numeric" }),
-      };
-    }
+async function fetchSpotifyToday(token){
+  const midnight=new Date(TODAY+"T00:00:00").getTime();
+  const res=await fetch(`https://api.spotify.com/v1/me/player/recently-played?limit=50&after=${midnight}`,{headers:{Authorization:`Bearer ${token}`}});
+  if(res.status===401)throw new Error("expired");
+  if(!res.ok)throw new Error("error");
+  const data=await res.json();
+  const tracks={};
+  (data.items||[]).forEach(item=>{
+    const key=`${item.track.name}|||${item.track.artists.map(a=>a.name).join(", ")}`;
+    if(!tracks[key])tracks[key]={name:item.track.name,artist:item.track.artists.map(a=>a.name).join(", "),plays:0};
+    tracks[key].plays++;
+  });
+  return Object.values(tracks).sort((a,b)=>b.plays-a.plays);
+}
 
-    async function fetchSpotifyToday(token) {
-      const midnight = new Date(TODAY + "T00:00:00").getTime();
-      const res = await fetch(`https://api.spotify.com/v1/me/player/recently-played?limit=50&after=${midnight}`,
-        { headers: { Authorization: `Bearer ${token}` } });
-      if (res.status === 401) throw new Error("expired");
-      if (!res.ok) throw new Error("error");
-      const data = await res.json();
-      const tracks = {};
-      (data.items || []).forEach(item => {
-        const key = `${item.track.name}|||${item.track.artists.map(a => a.name).join(", ")}`;
-        if (!tracks[key]) tracks[key] = { name: item.track.name, artist: item.track.artists.map(a => a.name).join(", "), plays: 0 };
-        tracks[key].plays++;
-      });
-      return Object.values(tracks).sort((a, b) => b.plays - a.plays);
-    }
+function parseLibreCSV(text){
+  const lines=text.split("\n");
+  let hi=-1;
+  for(let i=0;i<Math.min(lines.length,6);i++){if(lines[i].includes("Device Timestamp")||lines[i].includes("Timestamp")){hi=i;break;}}
+  if(hi<0)return null;
+  const headers=lines[hi].split(",").map(h=>h.trim().replace(/"/g,""));
+  const tsI=headers.findIndex(h=>h.includes("Timestamp"));
+  const rtI=headers.findIndex(h=>h.includes("Record Type"));
+  const hgI=headers.findIndex(h=>h.includes("Historic Glucose")&&h.includes("mg"));
+  const sgI=headers.findIndex(h=>h.includes("Scan Glucose")&&h.includes("mg"));
+  const daily={};
+  for(let i=hi+1;i<lines.length;i++){
+    const cols=lines[i].split(",").map(c=>c.trim().replace(/"/g,""));
+    if(cols.length<5)continue;
+    const ts=cols[tsI]||"";
+    const rt=parseInt(cols[rtI]);
+    const hg=parseFloat(cols[hgI]);
+    const sg=parseFloat(cols[sgI]);
+    const dm=ts.match(/(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/);
+    if(!dm)continue;
+    const[,a,b,y]=dm;
+    const date=`${y}-${a.padStart(2,"0")}-${b.padStart(2,"0")}`;
+    const glucose=(rt===0&&!isNaN(hg))?hg:(rt===1&&!isNaN(sg))?sg:NaN;
+    if(isNaN(glucose)||glucose<=0)continue;
+    if(!daily[date])daily[date]={readings:[]};
+    daily[date].readings.push(glucose);
+  }
+  Object.entries(daily).forEach(([date,data])=>{
+    const r=data.readings;
+    daily[date]={avg:Math.round(r.reduce((a,b)=>a+b,0)/r.length),min:Math.round(Math.min(...r)),max:Math.round(Math.max(...r)),count:r.length};
+  });
+  return daily;
+}
 
-    function fileToBase64(file) {
-      return new Promise((res, rej) => {
-        const r = new FileReader();
-        r.onload = () => res(r.result.split(",")[1]);
-        r.onerror = () => rej(new Error("failed"));
-        r.readAsDataURL(file);
-      });
-    }
+function scheduleNotif(time,hasLoggedToday){
+  if(!time||!("Notification" in window)||Notification.permission!=="granted"||hasLoggedToday)return;
+  const[h,m]=time.split(":").map(Number);
+  const now=new Date(),target=new Date();
+  target.setHours(h,m,0,0);
+  const delay=target-now;
+  if(delay>0&&delay<86400000){
+    setTimeout(()=>{
+      const t=new Date().toISOString().split("T")[0];
+      if(!(store.get("entries")||[]).find(e=>e.date===t)){
+        try{new Notification("🌿 Health Journal",{body:"Don't forget to log today!",icon:"/icon-192.png"});}catch{}
+      }
+    },delay);
+  }
+}
 
-    // ── Small components ─────────────────────────────────────────────────────────
+async function callClaude(apiKey,messages,system,maxTokens=600){
+  const res=await fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","x-api-key":apiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:maxTokens,system,messages})
+  });
+  const data=await res.json();
+  if(data.error)throw new Error(data.error.message);
+  return data.content?.[0]?.text||"";
+}
 
-    function ThreeWay({ label, value, onChange }) {
-      return (
-        <div style={{ marginBottom: 14 }}>
-          <p className="section-label" style={{ marginBottom: 7 }}>
-            {label} <span style={{ fontWeight: 400, color: "var(--text3)", fontSize: 12 }}>vs yesterday</span>
-          </p>
-          <div style={{ display: "flex", gap: 8 }}>
-            {RELATIVE.map(opt => {
-              const active = value === opt.value;
-              return (
-                <button key={opt.value} onClick={() => onChange(active ? null : opt.value)} style={{
-                  flex: 1, minHeight: 52, padding: "8px 4px", borderRadius: "var(--radius-md)",
-                  border: active ? `2px solid ${opt.color}` : "1px solid var(--border)",
-                  background: active ? opt.color + "18" : "var(--bg)",
-                  color: active ? opt.color : "var(--text2)",
-                  cursor: "pointer", fontSize: 13, fontWeight: active ? 600 : 400,
-                  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3,
-                  transition: "all 0.12s",
-                }}>
-                  <span style={{ fontSize: 18, lineHeight: 1 }}>{opt.short}</span>
-                  <span style={{ fontSize: 11, lineHeight: 1.2, textAlign: "center" }}>{opt.label}</span>
-                </button>
+function entrySummaryLine(e){
+  const music=e.spotifyTracks?.length?`music: ${e.spotifyTracks.slice(0,3).map(t=>`${t.name}${t.plays>1?` x${t.plays}`:""}`).join(", ")}`:null;
+  const pods=e.podcastGenres?.length?`podcasts (${e.podcastGenres.join(", ")})${e.podcastNote?` — ${e.podcastNote}`:""}`:null;
+  const period=e.period&&e.period!=="none"?`period: ${e.period}${e.pms?.length?`, pms: ${e.pms.join(", ")}`:""}`:null;
+  const moon=moonPhase(e.date);
+  return `${e.date}${e.location?` [${e.location}]`:""}${e.weather?` {${Math.round(e.weather.temp)}°C, ${wmoDesc(e.weather.code)}}`:""}${` [${moon.emoji} ${moon.name}]`}: mood=${relLabel(e.mood)}, energy=${relLabel(e.energy)}, stress=${relLabel(e.stress)}`+
+    (e.symptoms?.length?`, symptoms: ${e.symptoms.join(", ")}`:"")+
+    (e.activities?.length?`, activities: ${e.activities.join(", ")}`:"")+
+    (e.steps?`, steps: ${e.steps}`:"")+
+    (period?`, ${period}`:"")+
+    (music?`, ${music}`:"")+
+    (pods?`, ${pods}`:"")+
+    (e.food?`, food: ${e.food}`:"")+
+    (e.notes?`, notes: "${e.notes}"`:"");
+}
+
+// ── Small components ──────────────────────────────────────────────────────────
+function ThreeWay({label,value,onChange}){
+  return(
+    <div style={{marginBottom:14}}>
+      <p className="section-label" style={{marginBottom:7}}>{label} <span style={{fontWeight:400,color:"var(--text3)",fontSize:12}}>vs yesterday</span></p>
+      <div style={{display:"flex",gap:8}}>
+        {RELATIVE.map(opt=>{const active=value===opt.value;return(
+          <button key={opt.value} onClick={()=>onChange(active?null:opt.value)} style={{
+            flex:1,minHeight:52,padding:"8px 4px",borderRadius:"var(--radius-md)",
+            border:active?`2px solid ${opt.color}`:"1px solid var(--border)",
+            background:active?opt.color+"18":"var(--bg)",color:active?opt.color:"var(--text2)",
+            cursor:"pointer",fontSize:13,fontWeight:active?600:400,
+            display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:3,transition:"all 0.12s",
+          }}>
+            <span style={{fontSize:18,lineHeight:1}}>{opt.short}</span>
+            <span style={{fontSize:11,lineHeight:1.2,textAlign:"center"}}>{opt.label}</span>
+          </button>
+        );})}
+      </div>
+    </div>
+  );
+}
+
+function WeatherChip({weather}){
+  if(!weather)return null;
+  return <span className="weather-chip">{wmoEmoji(weather.code)} {Math.round(weather.temp)}°C <span style={{color:"var(--text3)"}}>{weather.humidity}% · {wmoDesc(weather.code)}</span></span>;
+}
+
+// ── Period & PMS ──────────────────────────────────────────────────────────────
+function PeriodSection({period,pms,onPeriodChange,onPmsChange}){
+  const toggle=(tag)=>onPmsChange(pms.includes(tag)?pms.filter(x=>x!==tag):[...pms,tag]);
+  const showPms=period&&period!=="none"||pms.length>0;
+  return(
+    <div style={{marginBottom:16}}>
+      <p className="section-label" style={{marginBottom:8}}>🩸 Period</p>
+      <div style={{display:"flex",gap:6,marginBottom:showPms?10:0}}>
+        {PERIOD_LEVELS.map(lv=>{
+          const active=period===lv.id;
+          return(
+            <button key={lv.id} onClick={()=>onPeriodChange(active&&lv.id!=="none"?null:lv.id)} style={{
+              flex:1,padding:"8px 2px",borderRadius:"var(--radius-md)",
+              border:active?`2px solid ${lv.color}`:"1px solid var(--border)",
+              background:active?lv.color+"22":"var(--bg)",color:active?lv.color:"var(--text3)",
+              cursor:"pointer",fontSize:11,fontWeight:active?600:400,
+              display:"flex",flexDirection:"column",alignItems:"center",gap:4,transition:"all 0.12s",
+            }}>
+              <span style={{width:10,height:10,borderRadius:"50%",background:lv.dot,display:"block"}}/>
+              <span>{lv.label}</span>
+            </button>
+          );
+        })}
+      </div>
+      {showPms&&(
+        <div>
+          <p style={{fontSize:12,color:"var(--text3)",marginBottom:6}}>PMS symptoms</p>
+          <div className="tags">{PMS_TAGS.map(tag=><span key={tag} className={`tag ${pms.includes(tag)?"active-red":""}`} onClick={()=>toggle(tag)}>{tag}</span>)}</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Headache map ──────────────────────────────────────────────────────────────
+function HeadacheMap({selected,onChange}){
+  const toggle=(z)=>onChange(selected.includes(z)?selected.filter(x=>x!==z):[...selected,z]);
+  const a=(z)=>selected.includes(z);
+  const zc="#e8b4c8";
+  return(
+    <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:6,padding:"10px 0",marginBottom:10,background:"var(--bg2)",borderRadius:"var(--radius-md)"}}>
+      <p style={{fontSize:11,color:"var(--text3)",margin:0}}>Tap to mark pain location</p>
+      <div style={{display:"flex",alignItems:"center",gap:10}}>
+        <svg width="120" height="140" viewBox="0 0 120 140">
+          <defs><clipPath id="hc"><ellipse cx="60" cy="65" rx="40" ry="52"/></clipPath></defs>
+          <ellipse cx="60" cy="65" rx="40" ry="52" fill="var(--bg)" stroke="var(--border2)" strokeWidth="1.5"/>
+          {/* TOP */}
+          <rect x="20" y="13" width="80" height="25" clipPath="url(#hc)" fill={a("top")?zc:"transparent"} opacity="0.6" style={{cursor:"pointer"}} onClick={()=>toggle("top")}/>
+          {/* FOREHEAD */}
+          <rect x="20" y="38" width="80" height="18" clipPath="url(#hc)" fill={a("forehead")?zc:"transparent"} opacity="0.6" style={{cursor:"pointer"}} onClick={()=>toggle("forehead")}/>
+          {/* LEFT */}
+          <rect x="20" y="56" width="40" height="45" clipPath="url(#hc)" fill={a("left")?zc:"transparent"} opacity="0.6" style={{cursor:"pointer"}} onClick={()=>toggle("left")}/>
+          {/* RIGHT */}
+          <rect x="60" y="56" width="40" height="45" clipPath="url(#hc)" fill={a("right")?zc:"transparent"} opacity="0.6" style={{cursor:"pointer"}} onClick={()=>toggle("right")}/>
+          <line x1="20" y1="38" x2="100" y2="38" stroke="var(--border)" strokeWidth="0.5" clipPath="url(#hc)"/>
+          <line x1="20" y1="56" x2="100" y2="56" stroke="var(--border)" strokeWidth="0.5" clipPath="url(#hc)"/>
+          <line x1="60" y1="56" x2="60" y2="101" stroke="var(--border)" strokeWidth="0.5" clipPath="url(#hc)"/>
+          <text x="60" y="30" textAnchor="middle" fontSize="8" fill={a("top")?"#a32d2d":"var(--text3)"} style={{pointerEvents:"none",fontFamily:"var(--font)"}}>top</text>
+          <text x="60" y="51" textAnchor="middle" fontSize="8" fill={a("forehead")?"#a32d2d":"var(--text3)"} style={{pointerEvents:"none",fontFamily:"var(--font)"}}>forehead</text>
+          <text x="36" y="82" textAnchor="middle" fontSize="8" fill={a("left")?"#a32d2d":"var(--text3)"} style={{pointerEvents:"none",fontFamily:"var(--font)"}}>left</text>
+          <text x="84" y="82" textAnchor="middle" fontSize="8" fill={a("right")?"#a32d2d":"var(--text3)"} style={{pointerEvents:"none",fontFamily:"var(--font)"}}>right</text>
+          <ellipse cx="47" cy="72" rx="5" ry="4" fill="none" stroke="var(--border2)" strokeWidth="1" style={{pointerEvents:"none"}}/>
+          <ellipse cx="73" cy="72" rx="5" ry="4" fill="none" stroke="var(--border2)" strokeWidth="1" style={{pointerEvents:"none"}}/>
+          <path d="M54,85 Q60,90 66,85" fill="none" stroke="var(--border2)" strokeWidth="1" style={{pointerEvents:"none"}}/>
+          <rect x="50" y="117" width="20" height="16" rx="4" fill="var(--bg2)" stroke="var(--border2)" strokeWidth="1.5"/>
+        </svg>
+        <button onClick={()=>toggle("back")} style={{
+          padding:"8px 10px",borderRadius:"var(--radius-md)",
+          border:a("back")?`1.5px solid #d4849a`:"1px solid var(--border)",
+          background:a("back")?"#fce8ef":"var(--bg)",
+          color:a("back")?"#a32d2d":"var(--text3)",
+          fontSize:11,cursor:"pointer",
+        }}>back of<br/>head</button>
+      </div>
+    </div>
+  );
+}
+
+// ── Poop log ──────────────────────────────────────────────────────────────────
+function PoopTypeIcon({type,size=28,color="currentColor"}){
+  const icons={
+    1:<><circle cx="8" cy="17" r="5" fill={color}/><circle cx="16" cy="13" r="5" fill={color}/><circle cx="24" cy="17" r="5" fill={color}/></>,
+    2:<path d="M7,19 Q10,11 14,13 Q17,10 20,13 Q23,11 25,18 Q23,22 18,22 Q10,23 7,21 Q5,20 7,19Z" fill={color}/>,
+    3:<><ellipse cx="16" cy="18" rx="11" ry="6" fill={color}/><path d="M11,14 Q13,18 11,22" fill="none" stroke="white" strokeWidth="1.2"/><path d="M18,13 Q20,17 18,21" fill="none" stroke="white" strokeWidth="1.2"/></>,
+    4:<ellipse cx="16" cy="18" rx="11" ry="6" fill={color}/>,
+    5:<><ellipse cx="9" cy="19" rx="6" ry="5" fill={color}/><ellipse cx="19" cy="16" rx="5.5" ry="5.5" fill={color}/><ellipse cx="25" cy="20" rx="5" ry="4" fill={color}/></>,
+  };
+  return <svg width={size} height={size} viewBox="0 0 32 32">{icons[type]}</svg>;
+}
+
+function PoopSection({poopLog,onChange}){
+  const[showAdd,setShowAdd]=useState(false);
+  const[newType,setNewType]=useState(null);
+  const[newTime,setNewTime]=useState(()=>{const n=new Date();return`${String(n.getHours()).padStart(2,"0")}:${String(n.getMinutes()).padStart(2,"0")}`;});
+  const[newNote,setNewNote]=useState("");
+  const log=poopLog||[];
+  const addEntry=()=>{
+    if(!newType)return;
+    const entry={type:newType,time:newTime,note:newNote,id:Date.now()};
+    onChange([...log,entry].sort((a,b)=>a.time.localeCompare(b.time)));
+    setNewType(null);setNewNote("");setShowAdd(false);
+  };
+  const remove=(id)=>onChange(log.filter(e=>e.id!==id));
+  const brown="#8B5E3C";
+  return(
+    <div style={{marginBottom:14}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+        <p className="section-label" style={{margin:0}}>💩 Poop log</p>
+        <button onClick={()=>setShowAdd(!showAdd)} style={{fontSize:12,padding:"4px 10px",borderRadius:20,border:"0.5px solid var(--border2)",background:"var(--bg)",color:"var(--text2)",cursor:"pointer",display:"flex",alignItems:"center",gap:4}}>
+          <Icon name="plus" size={14}/> Add
+        </button>
+      </div>
+      {log.map(e=>(
+        <div key={e.id} style={{display:"flex",alignItems:"center",gap:8,marginBottom:6,padding:"7px 10px",background:"var(--bg2)",borderRadius:"var(--radius-md)"}}>
+          <PoopTypeIcon type={e.type} size={22} color={brown}/>
+          <span style={{fontSize:12,color:"var(--text3)"}}>{e.time}</span>
+          <span style={{fontSize:12,flex:1,color:"var(--text2)"}}>{e.note||""}</span>
+          <button onClick={()=>remove(e.id)} style={{background:"none",border:"none",cursor:"pointer",color:"var(--text3)",padding:2,lineHeight:1}}>
+            <Icon name="x" size={14}/>
+          </button>
+        </div>
+      ))}
+      {showAdd&&(
+        <div style={{background:"var(--bg2)",borderRadius:"var(--radius-lg)",padding:12,marginTop:4}}>
+          <p style={{fontSize:12,color:"var(--text3)",marginBottom:8}}>Select consistency</p>
+          <div style={{display:"flex",gap:6,justifyContent:"center",marginBottom:10}}>
+            {[1,2,3,4,5].map(t=>(
+              <button key={t} onClick={()=>setNewType(t)} style={{
+                width:46,height:46,borderRadius:"var(--radius-md)",
+                border:newType===t?`2px solid ${brown}`:"1px solid var(--border)",
+                background:newType===t?"#fef3c7":"var(--bg)",
+                cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",
+              }}>
+                <PoopTypeIcon type={t} size={28} color={newType===t?brown:"var(--text3)"}/>
+              </button>
+            ))}
+          </div>
+          <div style={{display:"flex",gap:8,marginBottom:8}}>
+            <input type="time" value={newTime} onChange={e=>setNewTime(e.target.value)} style={{width:110,fontSize:13,flexShrink:0}}/>
+            <input value={newNote} onChange={e=>setNewNote(e.target.value)} placeholder="Notes (optional)" style={{flex:1,fontSize:13}}/>
+          </div>
+          <div style={{display:"flex",gap:8}}>
+            <button onClick={addEntry} disabled={!newType} style={{flex:1,padding:"8px",borderRadius:"var(--radius-md)",border:"none",background:newType?"var(--green)":"var(--bg3)",color:newType?"#fff":"var(--text3)",fontSize:13,cursor:newType?"pointer":"default"}}>Save</button>
+            <button onClick={()=>setShowAdd(false)} style={{padding:"8px 14px",borderRadius:"var(--radius-md)",border:"0.5px solid var(--border)",background:"var(--bg)",color:"var(--text2)",fontSize:13,cursor:"pointer"}}>Cancel</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Symptom conditions (2+ day streak) ────────────────────────────────────────
+function SymptomConditions({symptoms,prevEntries,conditions,onChange}){
+  const streak=symptoms.filter(s=>{
+    const last2=prevEntries.slice(0,2);
+    return last2.length>=2&&last2[0].symptoms?.includes(s)&&last2[1].symptoms?.includes(s);
+  });
+  if(!streak.length)return null;
+  return(
+    <div className="symptom-streak" style={{marginBottom:10}}>
+      <p style={{fontSize:12,color:"var(--amber)",fontWeight:500,marginBottom:8}}>🔁 Ongoing for 2+ days — how are they today?</p>
+      {streak.map(s=>(
+        <div key={s} style={{marginBottom:10}}>
+          <p style={{fontSize:12,fontWeight:500,marginBottom:5,color:"var(--text2)"}}>{s}</p>
+          <div style={{display:"flex",gap:6}}>
+            {RELATIVE.map(opt=>{const active=conditions[s]===opt.value;return(
+              <button key={opt.value} onClick={()=>onChange({...conditions,[s]:active?null:opt.value})} style={{
+                flex:1,padding:"5px 4px",borderRadius:"var(--radius-sm)",
+                border:active?`1.5px solid ${opt.color}`:"1px solid var(--border)",
+                background:active?opt.color+"18":"var(--bg)",color:active?opt.color:"var(--text2)",
+                cursor:"pointer",fontSize:12,fontWeight:active?600:400,
+              }}>{opt.short} {opt.label}</button>
+            );})}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Settings Modal ────────────────────────────────────────────────────────────
+function SettingsModal({settings,onSave,onClose,onGlucoseImport}){
+  const[anthropicKey,setAnthropicKey]=useState(settings.anthropicKey||"");
+  const[spotifyToken,setSpotifyToken]=useState(settings.spotifyToken||"");
+  const[notifEnabled,setNotifEnabled]=useState(settings.notifEnabled||false);
+  const[notifTime,setNotifTime]=useState(settings.notifTime||"21:00");
+  const[dateFormat,setDateFormat]=useState(settings.dateFormat||"default");
+  const[glucoseMsg,setGlucoseMsg]=useState("");
+
+  const handleExport=()=>{
+    const entries=store.get("entries")||[];
+    const blob=new Blob([JSON.stringify(entries,null,2)],{type:"application/json"});
+    const url=URL.createObjectURL(blob);const a=document.createElement("a");
+    a.href=url;a.download=`health-journal-${TODAY}.json`;a.click();URL.revokeObjectURL(url);
+  };
+  const handleImport=(e)=>{
+    const file=e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=(ev)=>{try{const data=JSON.parse(ev.target.result);if(Array.isArray(data)){store.set("entries",data);alert(`Imported ${data.length} entries. Reload to see them.`);}else alert("Invalid file.");}catch{alert("Couldn't read file.");}};
+    reader.readAsText(file);
+  };
+  const handleLibreImport=async(e)=>{
+    const file=e.target.files[0];if(!file)return;
+    setGlucoseMsg("Parsing...");
+    const text=await file.text();
+    const data=parseLibreCSV(text);
+    if(!data){setGlucoseMsg("Couldn't parse file. Make sure it's a LibreView CSV export.");return;}
+    const count=Object.keys(data).length;
+    store.set("glucoseData",data);
+    onGlucoseImport(data);
+    setGlucoseMsg(`✓ Imported ${count} days of glucose data`);
+    e.target.value="";
+  };
+  const requestNotifPermission=async()=>{
+    if(!("Notification" in window)){alert("Notifications not supported in this browser.");return;}
+    const perm=await Notification.requestPermission();
+    if(perm==="granted"){setNotifEnabled(true);}
+    else{alert("Permission denied. Enable notifications in your browser settings.");}
+  };
+
+  return(
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={e=>e.stopPropagation()}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
+          <h3>Settings</h3>
+          <button onClick={onClose} style={{background:"none",border:"none",fontSize:20,color:"var(--text3)",cursor:"pointer",padding:4}}><Icon name="x" size={20}/></button>
+        </div>
+
+        {/* API Keys */}
+        <div className="card" style={{marginBottom:12}}>
+          <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:4}}><Icon name="key" size={14}/><p className="section-label" style={{margin:0}}>Anthropic API key</p></div>
+          <p style={{fontSize:11,color:"var(--text3)",marginBottom:8,lineHeight:1.5}}>Required for AI analysis and food photo recognition. Get free at <a href="https://console.anthropic.com" target="_blank" rel="noreferrer">console.anthropic.com</a></p>
+          <input type="password" value={anthropicKey} onChange={e=>setAnthropicKey(e.target.value)} placeholder="sk-ant-..."/>
+        </div>
+        <div className="card" style={{marginBottom:12}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
+            <div style={{display:"flex",alignItems:"center",gap:6}}><Icon name="music" size={14}/><p className="section-label" style={{margin:0}}>Spotify token</p></div>
+            <span style={{fontSize:11,color:"var(--text3)"}}>expires ~1hr</span>
+          </div>
+          <p style={{fontSize:11,color:"var(--text3)",marginBottom:8,lineHeight:1.5}}>Get from <a href="https://developer.spotify.com/console/get-recently-played/" target="_blank" rel="noreferrer">Spotify API Console</a> → Get Token → check user-read-recently-played</p>
+          <input type="password" value={spotifyToken} onChange={e=>setSpotifyToken(e.target.value)} placeholder="BQA..."/>
+        </div>
+
+        {/* Notifications */}
+        <div className="card" style={{marginBottom:12}}>
+          <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:10}}><Icon name="bell" size={14}/><p className="section-label" style={{margin:0}}>Daily reminder</p></div>
+          <div className="toggle-row">
+            <span style={{fontSize:13,color:"var(--text2)"}}>Enable notification</span>
+            <label className="toggle">
+              <input type="checkbox" checked={notifEnabled} onChange={e=>{
+                if(e.target.checked&&Notification.permission!=="granted"){requestNotifPermission();}
+                else setNotifEnabled(e.target.checked);
+              }}/>
+              <span className="toggle-slider"/>
+            </label>
+          </div>
+          {notifEnabled&&(
+            <div style={{display:"flex",alignItems:"center",gap:8,marginTop:8}}>
+              <span style={{fontSize:13,color:"var(--text2)"}}>Remind me at</span>
+              <input type="time" value={notifTime} onChange={e=>setNotifTime(e.target.value)} style={{width:110,fontSize:13}}/>
+            </div>
+          )}
+          <p style={{fontSize:11,color:"var(--text3)",marginTop:8,lineHeight:1.5}}>Note: notification fires if the app is open or running in background. Background delivery is limited on iPhone without a backend.</p>
+        </div>
+
+        {/* Date format */}
+        <div className="card" style={{marginBottom:12}}>
+          <p className="section-label" style={{marginBottom:8}}>Date format</p>
+          <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+            {DATE_FORMATS.map(f=>(
+              <button key={f} onClick={()=>setDateFormat(f)} style={{
+                padding:"5px 10px",borderRadius:"var(--radius-sm)",fontSize:12,
+                border:dateFormat===f?"1.5px solid var(--green)":"0.5px solid var(--border)",
+                background:dateFormat===f?"var(--green-light)":"var(--bg)",
+                color:dateFormat===f?"var(--green-text)":"var(--text2)",cursor:"pointer",
+              }}>{f==="default"?"Mon, Jan 1":f==="yyyy.mm.dd"?"2025.01.01":f==="yyyy-mm-dd"?"2025-01-01":f==="dd/mm/yyyy"?"01/01/2025":"01/01/2025"}</button>
+            ))}
+          </div>
+        </div>
+
+        {/* FreeStyle Libre */}
+        <div className="card" style={{marginBottom:12}}>
+          <p className="section-label" style={{marginBottom:4}}>FreeStyle Libre (LibreView CSV)</p>
+          <p style={{fontSize:11,color:"var(--text3)",marginBottom:8,lineHeight:1.5}}>Export CSV from <a href="https://www.libreview.com" target="_blank" rel="noreferrer">libreview.com</a> → Reports → Export data. Glucose values merge into matching journal entry dates.</p>
+          <label className="btn-secondary" style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6,cursor:"pointer",fontSize:13}}>
+            <Icon name="upload" size={14}/>Import LibreView CSV
+            <input type="file" accept=".csv" onChange={handleLibreImport} style={{display:"none"}}/>
+          </label>
+          {glucoseMsg&&<p style={{fontSize:12,color:glucoseMsg.startsWith("✓")?"var(--green-text)":"var(--red)",marginTop:6}}>{glucoseMsg}</p>}
+        </div>
+
+        {/* Data backup */}
+        <div className="card" style={{marginBottom:16}}>
+          <p className="section-label" style={{marginBottom:4}}>Data backup</p>
+          <p style={{fontSize:11,color:"var(--text3)",marginBottom:10,lineHeight:1.5}}>Safari can clear local storage occasionally. Export every week or two.</p>
+          <div style={{display:"flex",gap:8}}>
+            <button onClick={handleExport} className="btn-secondary" style={{flex:1,fontSize:13,display:"flex",alignItems:"center",justifyContent:"center",gap:5}}>
+              <Icon name="download" size={14}/>Export
+            </button>
+            <label className="btn-secondary" style={{flex:1,fontSize:13,textAlign:"center",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:5}}>
+              <Icon name="upload" size={14}/>Import
+              <input type="file" accept=".json" onChange={handleImport} style={{display:"none"}}/>
+            </label>
+          </div>
+        </div>
+
+        <button onClick={()=>onSave({anthropicKey:anthropicKey.trim(),spotifyToken:spotifyToken.trim(),notifEnabled,notifTime,dateFormat})} className="btn-primary">Save</button>
+      </div>
+    </div>
+  );
+}
+
+// ── Log Tab ───────────────────────────────────────────────────────────────────
+function LogTab({entries,setEntries,settings,glucoseData}){
+  const existing=entries.find(e=>e.date===TODAY)||{};
+  const[mood,setMood]=useState(existing.mood??null);
+  const[energy,setEnergy]=useState(existing.energy??null);
+  const[stress,setStress]=useState(existing.stress??null);
+  const[period,setPeriod]=useState(existing.period||"none");
+  const[pms,setPms]=useState(existing.pms||[]);
+  const[symptoms,setSymptoms]=useState(existing.symptoms||[]);
+  const[symptomConditions,setSymptomConditions]=useState(existing.symptomConditions||{});
+  const[headacheZones,setHeadacheZones]=useState(existing.headacheZones||[]);
+  const[activities,setActivities]=useState(existing.activities||[]);
+  const[steps,setSteps]=useState(existing.steps||"");
+  const[food,setFood]=useState(existing.food||"");
+  const[foodPhotoB64,setFoodPhotoB64]=useState(existing.foodPhotoB64||null);
+  const[foodAnalysing,setFoodAnalysing]=useState(false);
+  const[foodPhotoError,setFoodPhotoError]=useState("");
+  const[poopLog,setPoopLog]=useState(existing.poopLog||[]);
+  const[location,setLocation]=useState(existing.location||"");
+  const[weather,setWeather]=useState(existing.weather||null);
+  const[wxLoading,setWxLoading]=useState(false);
+  const[wxError,setWxError]=useState("");
+  const[spotifyTracks,setSpotifyTracks]=useState(existing.spotifyTracks||[]);
+  const[spotifyLoading,setSpotifyLoading]=useState(false);
+  const[spotifyError,setSpotifyError]=useState("");
+  const[podcastGenres,setPodcastGenres]=useState(existing.podcastGenres||[]);
+  const[podcastNote,setPodcastNote]=useState(existing.podcastNote||"");
+  const[notes,setNotes]=useState(existing.notes||"");
+  const[saved,setSaved]=useState(false);
+  const debounce=useRef(null);
+
+  const toggle=(list,setList,item)=>setList(list.includes(item)?list.filter(x=>x!==item):[...list,item]);
+  const prevEntries=entries.filter(e=>e.date!==TODAY);
+  const moon=moonPhase(TODAY);
+  const todayGlucose=glucoseData?.[TODAY];
+
+  const fetchWeather=async(place)=>{
+    if(!place.trim()){setWeather(null);setWxError("");return;}
+    setWxLoading(true);setWxError("");setWeather(null);
+    try{
+      const g=await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(place)}&count=1&language=en`);
+      const gd=await g.json();
+      if(!gd.results?.length){setWxError("Location not found");setWxLoading(false);return;}
+      const{latitude,longitude,name,country}=gd.results[0];
+      const w=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m`);
+      const wd=await w.json();const c=wd.current;
+      setWeather({temp:c.temperature_2m,humidity:c.relative_humidity_2m,code:c.weather_code,wind:c.wind_speed_10m,resolvedName:`${name}, ${country}`});
+    }catch{setWxError("Couldn't fetch weather.");}
+    setWxLoading(false);
+  };
+
+  const handleFoodPhoto=async(e)=>{
+    const file=e.target.files[0];if(!file)return;
+    if(!settings.anthropicKey){setFoodPhotoError("Add your Anthropic API key in Settings");return;}
+    setFoodAnalysing(true);setFoodPhotoError("");
+    try{
+      const b64=await fileToBase64(file);
+      setFoodPhotoB64(b64.length>400000?b64.substring(0,400000):b64);
+      const result=await callClaude(settings.anthropicKey,[{role:"user",content:[
+        {type:"image",source:{type:"base64",media_type:file.type||"image/jpeg",data:b64}},
+        {type:"text",text:"Describe the food and drink in this photo in 1-2 short sentences for a health journal. Be specific about items and quantities. No preamble."}
+      ]}],"You are a food logging assistant. Describe food photos briefly and accurately.",200);
+      setFood(prev=>prev?prev+"\n"+result:result);
+    }catch{setFoodPhotoError("Couldn't analyse photo. Check your API key.");}
+    setFoodAnalysing(false);e.target.value="";
+  };
+
+  const loadSpotify=async()=>{
+    if(!settings.spotifyToken){setSpotifyError("Add your Spotify token in Settings");return;}
+    setSpotifyLoading(true);setSpotifyError("");
+    try{
+      const tracks=await fetchSpotifyToday(settings.spotifyToken);
+      setSpotifyTracks(tracks);
+      if(!tracks.length)setSpotifyError("No tracks played yet today.");
+    }catch(err){setSpotifyError(err.message==="expired"?"Token expired — refresh in Settings":"Couldn't connect to Spotify");}
+    setSpotifyLoading(false);
+  };
+
+  const handleSymptomToggle=(s)=>{
+    const next=symptoms.includes(s)?symptoms.filter(x=>x!==s):[...symptoms,s];
+    setSymptoms(next);
+    // clear headache zones if headache removed
+    if(s==="headache"&&symptoms.includes(s))setHeadacheZones([]);
+  };
+
+  const save=()=>{
+    const entry={date:TODAY,mood,energy,stress,period,pms,symptoms,symptomConditions,headacheZones,
+      activities,steps:steps?parseInt(steps):null,food,foodPhotoB64,poopLog,location,weather,
+      spotifyTracks,podcastGenres,podcastNote,notes,ts:Date.now()};
+    const newEntries=[entry,...entries.filter(e=>e.date!==TODAY)].sort((a,b)=>b.date.localeCompare(a.date));
+    setEntries(newEntries);store.set("entries",newEntries);
+    setSaved(true);setTimeout(()=>setSaved(false),2000);
+  };
+
+  const fmt=settings.dateFormat||"default";
+
+  return(
+    <div>
+      <div style={{marginBottom:14}}>
+        <p style={{fontSize:13,color:"var(--text3)"}}>{formatDateFn(TODAY,fmt)} · {moon.emoji} {moon.name}</p>
+        <h2>Today's log</h2>
+      </div>
+
+      {/* Period */}
+      <PeriodSection period={period} pms={pms} onPeriodChange={setPeriod} onPmsChange={setPms}/>
+
+      {/* Location + weather */}
+      <div style={{marginBottom:14}}>
+        <p className="section-label" style={{display:"flex",alignItems:"center",gap:5}}><Icon name="mapPin" size={13}/>Where are you today?</p>
+        <input value={location} onChange={e=>{setLocation(e.target.value);setWeather(null);setWxError("");clearTimeout(debounce.current);debounce.current=setTimeout(()=>fetchWeather(e.target.value),900);}} placeholder="City or place — weather auto-loads"/>
+        <div style={{marginTop:6,minHeight:22}}>
+          {wxLoading&&<span style={{fontSize:12,color:"var(--text3)"}}>Fetching weather...</span>}
+          {wxError&&<span style={{fontSize:12,color:"var(--red)"}}>{wxError}</span>}
+          {weather&&<div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}><WeatherChip weather={weather}/><span style={{fontSize:11,color:"var(--text3)"}}>{weather.resolvedName}</span></div>}
+        </div>
+      </div>
+
+      {/* Glucose (if imported data available) */}
+      {todayGlucose&&(
+        <div style={{padding:"8px 12px",background:"#e8f5ff",borderRadius:"var(--radius-md)",marginBottom:14,display:"flex",gap:12,alignItems:"center"}}>
+          <span style={{fontSize:12,color:"#1a6fa8",fontWeight:500}}>Libre: avg {todayGlucose.avg} mg/dL</span>
+          <span style={{fontSize:11,color:"#4a90c4"}}>↓{todayGlucose.min} ↑{todayGlucose.max} · {todayGlucose.count} readings</span>
+        </div>
+      )}
+
+      {/* Mood / Energy / Stress */}
+      <div className="card">
+        <ThreeWay label="Mood" value={mood} onChange={setMood}/>
+        <ThreeWay label="Energy" value={energy} onChange={setEnergy}/>
+        <ThreeWay label="Stress" value={stress} onChange={setStress}/>
+        <p style={{fontSize:11,color:"var(--text3)",marginTop:2}}>Tap again to clear</p>
+      </div>
+
+      {/* Symptoms */}
+      <div style={{marginBottom:14}}>
+        <p className="section-label">Physical symptoms</p>
+        <SymptomConditions symptoms={symptoms} prevEntries={prevEntries} conditions={symptomConditions} onChange={setSymptomConditions}/>
+        <div className="tags">
+          {SYMPTOMS.map(s=>(
+            <span key={s} className={`tag ${symptoms.includes(s)?"active-red":""}`} onClick={()=>handleSymptomToggle(s)}>{s}</span>
+          ))}
+        </div>
+        {symptoms.includes("headache")&&<div style={{marginTop:10}}><HeadacheMap selected={headacheZones} onChange={setHeadacheZones}/></div>}
+      </div>
+
+      {/* Activities */}
+      <div style={{marginBottom:14}}>
+        <p className="section-label">Activities & habits</p>
+        <div className="tags">{ACTIVITIES.map(a=><span key={a} className={`tag ${activities.includes(a)?"active-green":""}`} onClick={()=>toggle(activities,setActivities,a)}>{a}</span>)}</div>
+      </div>
+
+      {/* Steps */}
+      <div style={{marginBottom:14}}>
+        <p className="section-label" style={{display:"flex",alignItems:"center",gap:5}}><Icon name="footprints" size={13}/>Step count <span style={{fontWeight:400,color:"var(--text3)",fontSize:12}}>(manual entry)</span></p>
+        <input type="number" value={steps} onChange={e=>setSteps(e.target.value)} placeholder="e.g. 8500" style={{width:"100%",fontSize:15}}/>
+      </div>
+
+      {/* Food + photo */}
+      <div style={{marginBottom:14}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:7}}>
+          <p className="section-label" style={{margin:0,display:"flex",alignItems:"center",gap:5}}><Icon name="camera" size={13}/>Food & drink</p>
+          <label style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:13,color:foodAnalysing?"var(--text3)":"var(--green-text)",cursor:"pointer",padding:"5px 10px",borderRadius:20,border:`1px solid ${foodAnalysing?"var(--border)":"var(--green)"}`,background:foodAnalysing?"var(--bg2)":"var(--green-light)"}}>
+            {foodAnalysing?"Analysing...":"📷 Photo"}
+            <input type="file" accept="image/*" onChange={handleFoodPhoto} style={{display:"none"}} disabled={foodAnalysing}/>
+          </label>
+        </div>
+        {foodPhotoError&&<p style={{fontSize:12,color:"var(--red)",marginBottom:6}}>{foodPhotoError}</p>}
+        {foodPhotoB64&&!foodAnalysing&&(
+          <div style={{position:"relative",marginBottom:8}}>
+            <img src={`data:image/jpeg;base64,${foodPhotoB64}`} className="photo-preview" alt="Food"/>
+            <button onClick={()=>setFoodPhotoB64(null)} style={{position:"absolute",top:8,right:8,background:"rgba(0,0,0,0.55)",border:"none",color:"#fff",borderRadius:"50%",width:26,height:26,cursor:"pointer",fontSize:14}}>✕</button>
+          </div>
+        )}
+        {foodAnalysing&&<div style={{padding:12,background:"var(--bg2)",borderRadius:"var(--radius-md)",marginBottom:8,fontSize:13,color:"var(--text3)"}}>Analysing photo...</div>}
+        <textarea value={food} onChange={e=>setFood(e.target.value)} placeholder="What did you eat today? Or tap 📷 to analyse a photo." rows={3}/>
+      </div>
+
+      {/* Poop log */}
+      <PoopSection poopLog={poopLog} onChange={setPoopLog}/>
+
+      {/* Spotify */}
+      <div style={{marginBottom:14}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+          <p className="section-label" style={{margin:0,display:"flex",alignItems:"center",gap:5}}><Icon name="music" size={13}/>Music <span style={{fontWeight:400,color:"var(--text3)",fontSize:12}}>(Spotify)</span></p>
+          <button onClick={loadSpotify} disabled={spotifyLoading} style={{fontSize:13,padding:"5px 12px",borderRadius:20,border:"0.5px solid var(--border2)",background:"var(--bg)",color:"var(--text2)",cursor:spotifyLoading?"default":"pointer",minHeight:32}}>{spotifyLoading?"Loading...":"Fetch"}</button>
+        </div>
+        {spotifyError&&<p style={{fontSize:12,color:"var(--red)",marginBottom:6}}>{spotifyError}</p>}
+        {spotifyTracks.length>0&&(
+          <div className="card" style={{padding:"8px 10px",marginBottom:0}}>
+            {spotifyTracks.slice(0,5).map((t,i)=>(
+              <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",borderBottom:i<Math.min(spotifyTracks.length,5)-1?"0.5px solid var(--border)":"none"}}>
+                <div style={{flex:1,overflow:"hidden"}}><p style={{fontSize:13,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{t.name}</p><p style={{fontSize:11,color:"var(--text3)"}}>{t.artist}</p></div>
+                {t.plays>1&&<span style={{fontSize:12,color:"#1DB954",marginLeft:8,flexShrink:0,alignSelf:"center"}}>×{t.plays}</span>}
+              </div>
+            ))}
+            {spotifyTracks.length>5&&<p style={{fontSize:11,color:"var(--text3)",marginTop:6}}>+{spotifyTracks.length-5} more tracks</p>}
+          </div>
+        )}
+      </div>
+
+      {/* Podcasts */}
+      <div style={{marginBottom:14}}>
+        <p className="section-label" style={{display:"flex",alignItems:"center",gap:5}}><Icon name="mic" size={13}/>Podcasts <span style={{fontWeight:400,color:"var(--text3)",fontSize:12}}>(log manually)</span></p>
+        <div className="tags" style={{marginBottom:8}}>{PODCAST_GENRES.map(g=><span key={g} className={`tag ${podcastGenres.includes(g)?"active-purple":""}`} onClick={()=>toggle(podcastGenres,setPodcastGenres,g)}>{g}</span>)}</div>
+        <input value={podcastNote} onChange={e=>setPodcastNote(e.target.value)} placeholder="Specific show or note..."/>
+      </div>
+
+      {/* Notes */}
+      <div style={{marginBottom:20}}>
+        <p className="section-label">Notes</p>
+        <textarea value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Sleep quality, events, how you felt overall..." rows={3}/>
+      </div>
+
+      <button onClick={save} className="btn-primary" style={{background:saved?"var(--green-dark)":"var(--green)"}}>{saved?"Saved ✓":"Save today's log"}</button>
+    </div>
+  );
+}
+
+// ── History Tab ───────────────────────────────────────────────────────────────
+function HistoryTab({entries,settings,glucoseData}){
+  const[selected,setSelected]=useState(null);
+  const fmt=settings.dateFormat||"default";
+  const brown="#8B5E3C";
+
+  if(selected){
+    const e=selected;
+    const moon=moonPhase(e.date);
+    const glucose=glucoseData?.[e.date];
+    const periodLv=PERIOD_LEVELS.find(lv=>lv.id===e.period);
+    return(
+      <div>
+        <button className="back-btn" onClick={()=>setSelected(null)}>← Back</button>
+        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4,flexWrap:"wrap"}}>
+          <h3>{formatDateFn(e.date,fmt)}</h3>
+          {e.location&&<span style={{fontSize:12,color:"var(--text3)",padding:"2px 9px",borderRadius:10,border:"0.5px solid var(--border)"}}>{e.location}</span>}
+        </div>
+        <div style={{display:"flex",gap:8,marginBottom:12,flexWrap:"wrap"}}>
+          {e.weather&&<WeatherChip weather={e.weather}/>}
+          <span style={{fontSize:12,color:"var(--text3)"}}>{moon.emoji} {moon.name}</span>
+        </div>
+
+        {glucose&&<div style={{padding:"8px 12px",background:"#e8f5ff",borderRadius:"var(--radius-md)",marginBottom:12}}>
+          <span style={{fontSize:13,color:"#1a6fa8",fontWeight:500}}>Glucose: avg {glucose.avg} mg/dL </span>
+          <span style={{fontSize:12,color:"#4a90c4"}}>↓{glucose.min} ↑{glucose.max} · {glucose.count} readings</span>
+        </div>}
+
+        {periodLv&&periodLv.id!=="none"&&<div style={{marginBottom:12}}>
+          <p style={{fontSize:13,color:"var(--text3)",marginBottom:5}}>Period</p>
+          <div style={{display:"flex",alignItems:"center",gap:6}}>
+            <span style={{width:10,height:10,borderRadius:"50%",background:periodLv.dot,display:"inline-block"}}/>
+            <span style={{fontSize:13,color:periodLv.color,fontWeight:500}}>{periodLv.label}</span>
+          </div>
+          {e.pms?.length>0&&<div style={{marginTop:6}} className="tags">{e.pms.map(tag=><span key={tag} className="tag active-red" style={{cursor:"default"}}>{tag}</span>)}</div>}
+        </div>}
+
+        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:14}}>
+          {[["Mood",e.mood],["Energy",e.energy],["Stress",e.stress]].map(([lbl,val])=>{
+            const opt=val!==null&&val!==undefined?RELATIVE.find(r=>r.value===val):null;
+            return(<div key={lbl} className="stat"><p className="stat-label">{lbl}</p><p className="stat-value" style={{fontSize:22,color:opt?.color||"var(--text3)"}}>{opt?opt.short:"—"}</p><p style={{fontSize:11,color:opt?.color||"var(--text3)"}}>{opt?.label||"—"}</p></div>);
+          })}
+        </div>
+
+        {e.symptoms?.length>0&&<div style={{marginBottom:12}}>
+          <p style={{fontSize:13,color:"var(--text3)",marginBottom:6}}>Symptoms</p>
+          <div className="tags">
+            {e.symptoms.map(s=>{
+              const cond=e.symptomConditions?.[s];
+              const opt=cond!==null&&cond!==undefined?RELATIVE.find(r=>r.value===cond):null;
+              return(
+                <span key={s} className="tag active-red" style={{cursor:"default"}}>
+                  {s}{opt?` ${opt.short}`:""}
+                  {s==="headache"&&e.headacheZones?.length>0?` (${e.headacheZones.join(", ")})`:""}
+                </span>
               );
             })}
           </div>
-        </div>
-      );
-    }
+        </div>}
 
-    function WeatherChip({ weather }) {
-      if (!weather) return null;
-      return (
-        <span className="weather-chip">
-          {wmoEmoji(weather.code)} {Math.round(weather.temp)}°C
-          <span style={{ color: "var(--text3)" }}>{weather.humidity}% · {wmoDesc(weather.code)}</span>
-        </span>
-      );
-    }
-
-    function Badge({ val }) {
-      if (val === null || val === undefined) return <span style={{ color: "var(--text3)" }}>—</span>;
-      const opt = RELATIVE.find(r => r.value === val);
-      return opt ? <span style={{ color: opt.color, fontWeight: 500 }}>{opt.short} {opt.label}</span> : null;
-    }
-
-    // ── Settings Modal ───────────────────────────────────────────────────────────
-
-    function SettingsModal({ settings, onSave, onClose }) {
-      const [anthropicKey, setAnthropicKey] = useState(settings.anthropicKey || "");
-      const [spotifyToken, setSpotifyToken] = useState(settings.spotifyToken || "");
-
-      const handleExport = () => {
-        const entries = store.get("entries") || [];
-        const blob = new Blob([JSON.stringify(entries, null, 2)], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url; a.download = `health-journal-${TODAY}.json`; a.click();
-        URL.revokeObjectURL(url);
-      };
-
-      const handleImport = (e) => {
-        const file = e.target.files[0]; if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          try {
-            const data = JSON.parse(ev.target.result);
-            if (Array.isArray(data)) {
-              store.set("entries", data);
-              alert(`Imported ${data.length} entries. Reload the app to see them.`);
-            } else { alert("Invalid file format."); }
-          } catch { alert("Couldn't read file."); }
-        };
-        reader.readAsText(file);
-      };
-
-      return (
-        <div className="modal-overlay" onClick={onClose}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
-              <h3>Settings</h3>
-              <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 20, color: "var(--text3)", cursor: "pointer", padding: 4 }}>✕</button>
+        {e.steps&&<div style={{marginBottom:12}}><p style={{fontSize:13,color:"var(--text3)",marginBottom:4}}>Steps</p><p style={{fontSize:14}}>{e.steps.toLocaleString()}</p></div>}
+        {e.poopLog?.length>0&&<div style={{marginBottom:12}}>
+          <p style={{fontSize:13,color:"var(--text3)",marginBottom:6}}>💩 Poop log</p>
+          {e.poopLog.map((p,i)=>(
+            <div key={i} style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+              <PoopTypeIcon type={p.type} size={20} color={brown}/>
+              <span style={{fontSize:12,color:"var(--text3)"}}>{p.time}</span>
+              {p.note&&<span style={{fontSize:12,color:"var(--text2)"}}>{p.note}</span>}
             </div>
+          ))}
+        </div>}
+        {e.activities?.length>0&&<div style={{marginBottom:12}}><p style={{fontSize:13,color:"var(--text3)",marginBottom:6}}>Activities</p><div className="tags">{e.activities.map(a=><span key={a} className="tag active-green" style={{cursor:"default"}}>{a}</span>)}</div></div>}
+        {e.foodPhotoB64&&<div style={{marginBottom:12}}><p style={{fontSize:13,color:"var(--text3)",marginBottom:6}}>📷 Food photo</p><img src={`data:image/jpeg;base64,${e.foodPhotoB64}`} className="photo-preview" alt="Food"/></div>}
+        {e.food&&<div style={{marginBottom:12}}><p style={{fontSize:13,color:"var(--text3)",marginBottom:4}}>Food & drink</p><p style={{fontSize:14,lineHeight:1.6}}>{e.food}</p></div>}
+        {e.spotifyTracks?.length>0&&<div style={{marginBottom:12}}><p style={{fontSize:13,color:"var(--text3)",marginBottom:6}}>🎵 Music</p><p style={{fontSize:13,color:"var(--text2)"}}>{e.spotifyTracks.slice(0,4).map(t=>t.name).join(", ")}{e.spotifyTracks.length>4?` +${e.spotifyTracks.length-4} more`:""}</p></div>}
+        {e.podcastGenres?.length>0&&<div style={{marginBottom:12}}><p style={{fontSize:13,color:"var(--text3)",marginBottom:6}}>🎙 Podcasts</p><div className="tags">{e.podcastGenres.map(g=><span key={g} className="tag active-purple" style={{cursor:"default"}}>{g}</span>)}</div>{e.podcastNote&&<p style={{fontSize:13,marginTop:6,fontStyle:"italic",color:"var(--text2)"}}>{e.podcastNote}</p>}</div>}
+        {e.notes&&<div><p style={{fontSize:13,color:"var(--text3)",marginBottom:4}}>Notes</p><p style={{fontSize:14,fontStyle:"italic",lineHeight:1.6}}>{e.notes}</p></div>}
+      </div>
+    );
+  }
 
-            {/* Anthropic API key */}
-            <div className="card" style={{ marginBottom: 12 }}>
-              <p className="section-label" style={{ marginBottom: 4 }}>🤖 Anthropic API key</p>
-              <p style={{ fontSize: 11, color: "var(--text3)", marginBottom: 8, lineHeight: 1.5 }}>
-                Required for AI analysis. Get one free at{" "}
-                <a href="https://console.anthropic.com" target="_blank" rel="noreferrer">console.anthropic.com</a>
-              </p>
-              <input type="password" value={anthropicKey} onChange={e => setAnthropicKey(e.target.value)}
-                placeholder="sk-ant-..." />
-            </div>
+  if(!entries.length)return <div style={{textAlign:"center",padding:"60px 0",color:"var(--text3)"}}>No entries yet — start logging today!</div>;
 
-            {/* Spotify token */}
-            <div className="card" style={{ marginBottom: 12 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                <p className="section-label" style={{ margin: 0 }}>🎵 Spotify token</p>
-                <span style={{ fontSize: 11, color: "var(--text3)" }}>music only, expires ~1hr</span>
+  const moodUps=entries.filter(e=>e.mood===1).length;
+  const moodDowns=entries.filter(e=>e.mood===-1).length;
+  const locations=[...new Set(entries.map(e=>e.location).filter(Boolean))];
+
+  return(
+    <div>
+      <div className="stat-grid">
+        <div className="stat"><p className="stat-label">Entries</p><p className="stat-value">{entries.length}</p></div>
+        <div className="stat"><p className="stat-label">Better days</p><p className="stat-value" style={{color:"var(--green)"}}>{moodUps}</p></div>
+        <div className="stat"><p className="stat-label">Harder days</p><p className="stat-value" style={{color:"var(--red)"}}>{moodDowns}</p></div>
+      </div>
+      {locations.length>0&&<div style={{marginBottom:12,display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}><span style={{fontSize:12,color:"var(--text3)"}}>Places:</span>{locations.map(l=><span key={l} style={{fontSize:12,padding:"2px 9px",borderRadius:10,border:"0.5px solid var(--border)",color:"var(--text2)"}}>{l}</span>)}</div>}
+      {entries.map(e=>{
+        const periodLv=PERIOD_LEVELS.find(lv=>lv.id===e.period);
+        const moon=moonPhase(e.date);
+        return(
+          <div key={e.date} className="entry-card" onClick={()=>setSelected(e)}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
+              <div style={{display:"flex",alignItems:"center",gap:7}}>
+                <span style={{fontSize:14,fontWeight:500}}>{formatDateFn(e.date,fmt)}</span>
+                {e.location&&<span style={{fontSize:11,color:"var(--text3)",padding:"1px 7px",borderRadius:10,border:"0.5px solid var(--border)"}}>{e.location}</span>}
               </div>
-              <p style={{ fontSize: 11, color: "var(--text3)", marginBottom: 8, lineHeight: 1.5 }}>
-                Get from{" "}
-                <a href="https://developer.spotify.com/console/get-recently-played/" target="_blank" rel="noreferrer">
-                  Spotify API Console
-                </a>{" "}→ Get Token → check user-read-recently-played
-              </p>
-              <input type="password" value={spotifyToken} onChange={e => setSpotifyToken(e.target.value)}
-                placeholder="BQA..." />
-            </div>
-
-            {/* Data backup */}
-            <div className="card" style={{ marginBottom: 16 }}>
-              <p className="section-label" style={{ marginBottom: 4 }}>💾 Data backup</p>
-              <p style={{ fontSize: 11, color: "var(--text3)", marginBottom: 10, lineHeight: 1.5 }}>
-                Safari can clear local data if the app hasn't been opened for a while. Export regularly to be safe.
-              </p>
-              <div style={{ display: "flex", gap: 8 }}>
-                <button onClick={handleExport} className="btn-secondary" style={{ flex: 1, fontSize: 13 }}>Export JSON</button>
-                <label className="btn-secondary" style={{ flex: 1, fontSize: 13, textAlign: "center", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  Import JSON
-                  <input type="file" accept=".json" onChange={handleImport} style={{ display: "none" }} />
-                </label>
+              <div style={{display:"flex",alignItems:"center",gap:6}}>
+                <span style={{fontSize:12}}>{moon.emoji}</span>
+                {e.weather&&<span style={{fontSize:13}}>{wmoEmoji(e.weather.code)} {Math.round(e.weather.temp)}°C</span>}
               </div>
             </div>
-
-            <button onClick={() => onSave({ anthropicKey: anthropicKey.trim(), spotifyToken: spotifyToken.trim() })}
-              className="btn-primary">Save</button>
-          </div>
-        </div>
-      );
-    }
-
-    // ── Log Tab ──────────────────────────────────────────────────────────────────
-
-    function LogTab({ entries, setEntries, settings }) {
-      const existing = entries.find(e => e.date === TODAY) || {};
-      const [mood, setMood] = useState(existing.mood ?? null);
-      const [energy, setEnergy] = useState(existing.energy ?? null);
-      const [stress, setStress] = useState(existing.stress ?? null);
-      const [symptoms, setSymptoms] = useState(existing.symptoms || []);
-      const [activities, setActivities] = useState(existing.activities || []);
-      const [food, setFood] = useState(existing.food || "");
-      const [location, setLocation] = useState(existing.location || "");
-      const [weather, setWeather] = useState(existing.weather || null);
-      const [wxLoading, setWxLoading] = useState(false);
-      const [wxError, setWxError] = useState("");
-      const [spotifyTracks, setSpotifyTracks] = useState(existing.spotifyTracks || []);
-      const [spotifyLoading, setSpotifyLoading] = useState(false);
-      const [spotifyError, setSpotifyError] = useState("");
-      const [podcastGenres, setPodcastGenres] = useState(existing.podcastGenres || []);
-      const [podcastNote, setPodcastNote] = useState(existing.podcastNote || "");
-      const [notes, setNotes] = useState(existing.notes || "");
-      const [saved, setSaved] = useState(false);
-      const [foodPhotoB64, setFoodPhotoB64] = useState(existing.foodPhotoB64 || null);
-      const [foodAnalysing, setFoodAnalysing] = useState(false);
-      const [foodPhotoError, setFoodPhotoError] = useState("");
-      const debounce = useRef(null);
-
-      const toggle = (list, setList, item) =>
-        setList(list.includes(item) ? list.filter(x => x !== item) : [...list, item]);
-
-      const fetchWeather = async (place) => {
-        if (!place.trim()) { setWeather(null); setWxError(""); return; }
-        setWxLoading(true); setWxError(""); setWeather(null);
-        try {
-          const g = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(place)}&count=1&language=en`);
-          const gd = await g.json();
-          if (!gd.results?.length) { setWxError("Location not found"); setWxLoading(false); return; }
-          const { latitude, longitude, name, country } = gd.results[0];
-          const w = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m`);
-          const wd = await w.json();
-          const c = wd.current;
-          setWeather({ temp: c.temperature_2m, humidity: c.relative_humidity_2m, code: c.weather_code, wind: c.wind_speed_10m, resolvedName: `${name}, ${country}` });
-        } catch { setWxError("Couldn't fetch weather"); }
-        setWxLoading(false);
-      };
-
-      const loadSpotify = async () => {
-        if (!settings.spotifyToken) { setSpotifyError("Add your Spotify token in Settings"); return; }
-        setSpotifyLoading(true); setSpotifyError("");
-        try {
-          const tracks = await fetchSpotifyToday(settings.spotifyToken);
-          setSpotifyTracks(tracks);
-          if (!tracks.length) setSpotifyError("No tracks played yet today.");
-        } catch (e) {
-          setSpotifyError(e.message === "expired" ? "Token expired — refresh it in Settings" : "Couldn't connect to Spotify");
-        }
-        setSpotifyLoading(false);
-      };
-
-      const handleFoodPhoto = async (e) => {
-        const file = e.target.files[0]; if (!file) return;
-        if (!settings.anthropicKey) { setFoodPhotoError("Add your Anthropic API key in Settings ⚙"); return; }
-        setFoodAnalysing(true); setFoodPhotoError("");
-        try {
-          const b64 = await fileToBase64(file);
-          setFoodPhotoB64(b64.length > 400000 ? b64.substring(0, 400000) : b64);
-          const res = await fetch("https://api.anthropic.com/v1/messages", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json", "x-api-key": settings.anthropicKey,
-              "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true"
-            },
-            body: JSON.stringify({
-              model: "claude-sonnet-4-20250514", max_tokens: 200,
-              messages: [{
-                role: "user", content: [
-                  { type: "image", source: { type: "base64", media_type: file.type || "image/jpeg", data: b64 } },
-                  { type: "text", text: "Describe the food and drink in this photo in 1-2 short sentences for a health journal. Be specific about items and quantities. No preamble." }
-                ]
-              }]
-            })
-          });
-          const data = await res.json();
-          setFood(prev => prev ? prev + "\n" + (data.content?.[0]?.text || "") : (data.content?.[0]?.text || ""));
-        } catch { setFoodPhotoError("Couldn't analyse photo. Check your API key."); }
-        setFoodAnalysing(false); e.target.value = "";
-      };
-
-      const save = () => {
-        const entry = {
-          date: TODAY, mood, energy, stress, symptoms, activities, food, foodPhotoB64, location, weather,
-          spotifyTracks, podcastGenres, podcastNote, notes, ts: Date.now()
-        };
-        const newEntries = [entry, ...entries.filter(e => e.date !== TODAY)].sort((a, b) => b.date.localeCompare(a.date));
-        setEntries(newEntries);
-        store.set("entries", newEntries);
-        setSaved(true); setTimeout(() => setSaved(false), 2000);
-      };
-
-      return (
-        <div>
-          <div style={{ marginBottom: 16 }}>
-            <p style={{ fontSize: 13, color: "var(--text3)" }}>{new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>
-            <h2>Today's log</h2>
-          </div>
-
-          {/* Location */}
-          <div style={{ marginBottom: 14 }}>
-            <p className="section-label">Where are you today?</p>
-            <input value={location} onChange={e => { setLocation(e.target.value); setWeather(null); setWxError(""); clearTimeout(debounce.current); debounce.current = setTimeout(() => fetchWeather(e.target.value), 900); }}
-              placeholder="City or place — weather auto-loads" />
-            <div style={{ marginTop: 6, minHeight: 24 }}>
-              {wxLoading && <span style={{ fontSize: 12, color: "var(--text3)" }}>Fetching weather...</span>}
-              {wxError && <span style={{ fontSize: 12, color: "var(--red)" }}>{wxError}</span>}
-              {weather && <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                <WeatherChip weather={weather} />
-                <span style={{ fontSize: 11, color: "var(--text3)" }}>{weather.resolvedName}</span>
-              </div>}
-            </div>
-          </div>
-
-          {/* Mood / Energy / Stress */}
-          <div className="card">
-            <ThreeWay label="Mood" value={mood} onChange={setMood} />
-            <ThreeWay label="Energy" value={energy} onChange={setEnergy} />
-            <ThreeWay label="Stress" value={stress} onChange={setStress} />
-            <p style={{ fontSize: 11, color: "var(--text3)", marginTop: 2 }}>Tap the same button again to clear</p>
-          </div>
-
-          {/* Symptoms */}
-          <div style={{ marginBottom: 14 }}>
-            <p className="section-label">Physical symptoms</p>
-            <div className="tags">
-              {SYMPTOMS.map(s => (
-                <span key={s} className={`tag ${symptoms.includes(s) ? "active-red" : ""}`}
-                  onClick={() => toggle(symptoms, setSymptoms, s)}>{s}</span>
-              ))}
-            </div>
-          </div>
-
-          {/* Activities */}
-          <div style={{ marginBottom: 14 }}>
-            <p className="section-label">Activities & habits</p>
-            <div className="tags">
-              {ACTIVITIES.map(a => (
-                <span key={a} className={`tag ${activities.includes(a) ? "active-green" : ""}`}
-                  onClick={() => toggle(activities, setActivities, a)}>{a}</span>
-              ))}
-            </div>
-          </div>
-
-          {/* Food + photo analysis */}
-          <div style={{ marginBottom: 14 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 7 }}>
-              <p className="section-label" style={{ margin: 0 }}>Food & drink</p>
-              <label style={{
-                display: "inline-flex", alignItems: "center", gap: 5, fontSize: 13,
-                color: foodAnalysing ? "var(--text3)" : "var(--green-text)", cursor: "pointer",
-                padding: "5px 12px", borderRadius: 20,
-                border: `1px solid ${foodAnalysing ? "var(--border)" : "var(--green)"}`,
-                background: foodAnalysing ? "var(--bg2)" : "var(--green-light)"
-              }}>
-                {foodAnalysing ? "Analysing..." : "📷 Photo"}
-                <input type="file" accept="image/*" onChange={handleFoodPhoto}
-                  style={{ display: "none" }} disabled={foodAnalysing} />
-              </label>
-            </div>
-            {foodPhotoError && <p style={{ fontSize: 12, color: "var(--red)", marginBottom: 6 }}>{foodPhotoError}</p>}
-            {foodPhotoB64 && !foodAnalysing && (
-              <div style={{ position: "relative", marginBottom: 8 }}>
-                <img src={`data:image/jpeg;base64,${foodPhotoB64}`}
-                  style={{ width: "100%", maxHeight: 200, objectFit: "cover", borderRadius: "var(--radius-md)", display: "block" }} />
-                <button onClick={() => setFoodPhotoB64(null)} style={{
-                  position: "absolute", top: 8, right: 8,
-                  background: "rgba(0,0,0,0.55)", border: "none", color: "#fff", borderRadius: "50%",
-                  width: 26, height: 26, cursor: "pointer", fontSize: 14
-                }}>✕</button>
-              </div>
-            )}
-            {foodAnalysing && <div style={{
-              padding: 12, background: "var(--bg2)", borderRadius: "var(--radius-md)",
-              marginBottom: 8, fontSize: 13, color: "var(--text3)"
-            }}>Analysing photo with AI...</div>}
-            <textarea value={food} onChange={e => setFood(e.target.value)}
-              placeholder="What did you eat today? Or tap 📷 to analyse a photo." rows={3} />
-          </div>
-
-          {/* Spotify */}
-          <div style={{ marginBottom: 14 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-              <p className="section-label" style={{ margin: 0 }}>🎵 Music <span style={{ fontWeight: 400, color: "var(--text3)", fontSize: 12 }}>(Spotify)</span></p>
-              <button onClick={loadSpotify} disabled={spotifyLoading} style={{
-                fontSize: 13, padding: "5px 12px", borderRadius: 20,
-                border: "0.5px solid var(--border2)", background: "var(--bg)",
-                color: "var(--text2)", cursor: spotifyLoading ? "default" : "pointer", minHeight: 32
-              }}>{spotifyLoading ? "Loading..." : "Fetch"}</button>
-            </div>
-            {spotifyError && <p style={{ fontSize: 12, color: "var(--red)", marginBottom: 6 }}>{spotifyError}</p>}
-            {spotifyTracks.length > 0 && (
-              <div className="card" style={{ padding: "8px 10px", marginBottom: 0 }}>
-                {spotifyTracks.slice(0, 5).map((t, i) => (
-                  <div key={i} style={{
-                    display: "flex", justifyContent: "space-between", padding: "4px 0",
-                    borderBottom: i < Math.min(spotifyTracks.length, 5) - 1 ? "0.5px solid var(--border)" : "none"
-                  }}>
-                    <div style={{ flex: 1, overflow: "hidden" }}>
-                      <p style={{ fontSize: 13, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.name}</p>
-                      <p style={{ fontSize: 11, color: "var(--text3)" }}>{t.artist}</p>
-                    </div>
-                    {t.plays > 1 && <span style={{ fontSize: 12, color: "#1DB954", marginLeft: 8, flexShrink: 0, alignSelf: "center" }}>×{t.plays}</span>}
-                  </div>
-                ))}
-                {spotifyTracks.length > 5 && <p style={{ fontSize: 11, color: "var(--text3)", marginTop: 6 }}>+{spotifyTracks.length - 5} more tracks</p>}
-              </div>
-            )}
-          </div>
-
-          {/* Podcasts */}
-          <div style={{ marginBottom: 14 }}>
-            <p className="section-label">🎙 Podcasts <span style={{ fontWeight: 400, color: "var(--text3)", fontSize: 12 }}>(log manually)</span></p>
-            <div className="tags" style={{ marginBottom: 8 }}>
-              {PODCAST_GENRES.map(g => (
-                <span key={g} className={`tag ${podcastGenres.includes(g) ? "active-purple" : ""}`}
-                  onClick={() => toggle(podcastGenres, setPodcastGenres, g)}>{g}</span>
-              ))}
-            </div>
-            <input value={podcastNote} onChange={e => setPodcastNote(e.target.value)}
-              placeholder="Specific show or note (e.g. 3 episodes of X...)" />
-          </div>
-
-          {/* Notes */}
-          <div style={{ marginBottom: 20 }}>
-            <p className="section-label">Notes</p>
-            <textarea value={notes} onChange={e => setNotes(e.target.value)}
-              placeholder="Sleep quality, events, how you felt overall..." rows={3} />
-          </div>
-
-          <button onClick={save} className={`btn-primary ${saved ? "saved" : ""}`}>
-            {saved ? "Saved ✓" : "Save today's log"}
-          </button>
-        </div>
-      );
-    }
-
-    // ── History Tab ──────────────────────────────────────────────────────────────
-
-    function HistoryTab({ entries }) {
-      const [selected, setSelected] = useState(null);
-
-      if (selected) {
-        const e = selected;
-        return (
-          <div>
-            <button className="back-btn" onClick={() => setSelected(null)}>← Back</button>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
-              <h3>{formatDate(e.date)}</h3>
-              {e.location && <span style={{ fontSize: 12, color: "var(--text3)", padding: "2px 9px", borderRadius: 10, border: "0.5px solid var(--border)" }}>{e.location}</span>}
-            </div>
-            {e.weather && <div style={{ marginBottom: 12 }}><WeatherChip weather={e.weather} /></div>}
-
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8, marginBottom: 14 }}>
-              {[["Mood", e.mood], ["Energy", e.energy], ["Stress", e.stress]].map(([lbl, val]) => {
-                const opt = val !== null && val !== undefined ? RELATIVE.find(r => r.value === val) : null;
-                return (
-                  <div key={lbl} className="stat">
-                    <p className="stat-label">{lbl}</p>
-                    <p className="stat-value" style={{ fontSize: 24, color: opt?.color || "var(--text3)" }}>{opt ? opt.short : "—"}</p>
-                    <p style={{ fontSize: 11, color: opt?.color || "var(--text3)" }}>{opt?.label || "Not logged"}</p>
-                  </div>
-                );
+            <div style={{display:"flex",gap:10,marginBottom:5,flexWrap:"wrap"}}>
+              {[["Mood",e.mood],["Energy",e.energy],["Stress",e.stress]].map(([lbl,val])=>{
+                const opt=val!==null&&val!==undefined?RELATIVE.find(r=>r.value===val):null;
+                return <span key={lbl} style={{fontSize:12,color:opt?.color||"var(--text3)"}}>{lbl}: {opt?opt.short+" "+opt.label:"—"}</span>;
               })}
             </div>
-
-            {e.symptoms?.length > 0 && <div style={{ marginBottom: 12 }}>
-              <p style={{ fontSize: 13, color: "var(--text3)", marginBottom: 6 }}>Symptoms</p>
-              <div className="tags">{e.symptoms.map(s => <span key={s} className="tag active-red" style={{ cursor: "default" }}>{s}</span>)}</div>
-            </div>}
-            {e.activities?.length > 0 && <div style={{ marginBottom: 12 }}>
-              <p style={{ fontSize: 13, color: "var(--text3)", marginBottom: 6 }}>Activities</p>
-              <div className="tags">{e.activities.map(a => <span key={a} className="tag active-green" style={{ cursor: "default" }}>{a}</span>)}</div>
-            </div>}
-            {e.spotifyTracks?.length > 0 && <div style={{ marginBottom: 12 }}>
-              <p style={{ fontSize: 13, color: "var(--text3)", marginBottom: 6 }}>🎵 Music ({e.spotifyTracks.length} tracks)</p>
-              <p style={{ fontSize: 13, color: "var(--text2)" }}>{e.spotifyTracks.slice(0, 4).map(t => t.name).join(", ")}{e.spotifyTracks.length > 4 ? ` +${e.spotifyTracks.length - 4} more` : ""}</p>
-            </div>}
-            {e.podcastGenres?.length > 0 && <div style={{ marginBottom: 12 }}>
-              <p style={{ fontSize: 13, color: "var(--text3)", marginBottom: 6 }}>🎙 Podcasts</p>
-              <div className="tags">{e.podcastGenres.map(g => <span key={g} className="tag active-purple" style={{ cursor: "default" }}>{g}</span>)}</div>
-              {e.podcastNote && <p style={{ fontSize: 13, marginTop: 6, fontStyle: "italic", color: "var(--text2)" }}>{e.podcastNote}</p>}
-            </div>}
-            {e.food && <div style={{ marginBottom: 12 }}>
-              <p style={{ fontSize: 13, color: "var(--text3)", marginBottom: 4 }}>Food & drink</p>
-              <p style={{ fontSize: 14 }}>{e.food}</p>
-            </div>}
-            {e.notes && <div>
-              <p style={{ fontSize: 13, color: "var(--text3)", marginBottom: 4 }}>Notes</p>
-              <p style={{ fontSize: 14, fontStyle: "italic" }}>{e.notes}</p>
-            </div>}
+            <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+              {e.symptoms?.slice(0,3).map(s=><span key={s} style={{fontSize:11,padding:"2px 7px",borderRadius:10,background:"var(--red-light)",color:"var(--red)"}}>{s}</span>)}
+              {periodLv&&periodLv.id!=="none"&&<span style={{fontSize:11,padding:"2px 7px",borderRadius:10,background:periodLv.dot+"33",color:periodLv.color}}>🩸 {periodLv.label}</span>}
+              {e.podcastGenres?.slice(0,2).map(g=><span key={g} style={{fontSize:11,padding:"2px 7px",borderRadius:10,background:"var(--purple-light)",color:"var(--purple)"}}>{g}</span>)}
+              {e.poopLog?.length>0&&<span style={{fontSize:11,padding:"2px 7px",borderRadius:10,background:"var(--amber-light)",color:"var(--amber)"}}>💩 {e.poopLog.length}</span>}
+              {e.steps&&<span style={{fontSize:11,padding:"2px 7px",borderRadius:10,background:"var(--green-light)",color:"var(--green-text)"}}>👟 {Number(e.steps).toLocaleString()}</span>}
+              {glucoseData?.[e.date]&&<span style={{fontSize:11,padding:"2px 7px",borderRadius:10,background:"#e8f5ff",color:"#1a6fa8"}}>⚡ {glucoseData[e.date].avg}</span>}
+            </div>
           </div>
         );
-      }
+      })}
+    </div>
+  );
+}
 
-      if (!entries.length) return (
-        <div style={{ textAlign: "center", padding: "60px 0", color: "var(--text3)" }}>No entries yet — start logging today!</div>
-      );
+// ── Summary Section ───────────────────────────────────────────────────────────
+function SummarySection({entries,apiKey,settings}){
+  const fmt=settings?.dateFormat||"default";
+  const PERIODS=[
+    {id:"week-0",...(()=>{const n=new Date();const m=new Date(n);m.setDate(n.getDate()-((n.getDay()+6)%7));m.setHours(0,0,0,0);const s=new Date(m);s.setDate(m.getDate()+6);return{start:m.toISOString().split("T")[0],end:s.toISOString().split("T")[0],label:"This week"};})()},
+    {id:"week-1",...(()=>{const n=new Date();const m=new Date(n);m.setDate(n.getDate()-((n.getDay()+6)%7)-7);m.setHours(0,0,0,0);const s=new Date(m);s.setDate(m.getDate()+6);return{start:m.toISOString().split("T")[0],end:s.toISOString().split("T")[0],label:"Last week"};})()},
+    {id:"month-0",...(()=>{const n=new Date();const f=new Date(n.getFullYear(),n.getMonth(),1);const l=new Date(n.getFullYear(),n.getMonth()+1,0);return{start:f.toISOString().split("T")[0],end:l.toISOString().split("T")[0],label:"This month"};})()},
+    {id:"month-1",...(()=>{const n=new Date();const f=new Date(n.getFullYear(),n.getMonth()-1,1);const l=new Date(n.getFullYear(),n.getMonth(),0);return{start:f.toISOString().split("T")[0],end:l.toISOString().split("T")[0],label:"Last month"};})()},
+  ];
+  const[activePeriod,setActivePeriod]=useState(null);
+  const[summaries,setSummaries]=useState(()=>store.get("summaries")||{});
+  const[loading,setLoading]=useState(false);
+  const[error,setError]=useState("");
 
-      const moodUps = entries.filter(e => e.mood === 1).length;
-      const moodDowns = entries.filter(e => e.mood === -1).length;
-      const locations = [...new Set(entries.map(e => e.location).filter(Boolean))];
+  const generate=async(period)=>{
+    if(!apiKey){setError("Add your Anthropic API key in Settings");return;}
+    const pe=entries.filter(e=>e.date>=period.start&&e.date<=period.end);
+    if(!pe.length){setError(`No entries for ${period.label}.`);return;}
+    setLoading(true);setError("");
+    try{
+      const text=await callClaude(apiKey,[{role:"user",content:`${period.label} (${period.start} to ${period.end}):\n\n${pe.map(entrySummaryLine).join("\n")}\n\nWrite a personal summary.`}],
+      `Write a warm personal health journal summary. Flowing paragraphs, no bullets. Cover: overall feeling, mood/energy/stress, symptoms, what helped, media patterns, period/cycle if relevant, moon phase correlations if any, one forward-looking sentence. Around 200-250 words.`,900);
+      const updated={...summaries,[period.id]:{text,generatedAt:new Date().toISOString(),label:period.label}};
+      setSummaries(updated);store.set("summaries",updated);
+    }catch{setError("Couldn't generate summary.");}
+    setLoading(false);
+  };
 
-      return (
-        <div>
-          <div className="stat-grid">
-            <div className="stat"><p className="stat-label">Entries</p><p className="stat-value">{entries.length}</p></div>
-            <div className="stat"><p className="stat-label">Better days</p><p className="stat-value" style={{ color: "var(--green)" }}>{moodUps}</p></div>
-            <div className="stat"><p className="stat-label">Harder days</p><p className="stat-value" style={{ color: "var(--red)" }}>{moodDowns}</p></div>
-          </div>
-          {locations.length > 0 && (
-            <div style={{ marginBottom: 12, display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
-              <span style={{ fontSize: 12, color: "var(--text3)" }}>Places:</span>
-              {locations.map(l => <span key={l} style={{ fontSize: 12, padding: "2px 9px", borderRadius: 10, border: "0.5px solid var(--border)", color: "var(--text2)" }}>{l}</span>)}
-            </div>
-          )}
-          {entries.map(e => (
-            <div key={e.date} className="entry-card" onClick={() => setSelected(e)}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 5 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                  <span style={{ fontSize: 14, fontWeight: 500 }}>{formatDate(e.date)}</span>
-                  {e.location && <span style={{ fontSize: 11, color: "var(--text3)", padding: "1px 7px", borderRadius: 10, border: "0.5px solid var(--border)" }}>{e.location}</span>}
-                </div>
-                {e.weather && <span style={{ fontSize: 13 }}>{wmoEmoji(e.weather.code)} {Math.round(e.weather.temp)}°C</span>}
-              </div>
-              <div style={{ display: "flex", gap: 10, marginBottom: 5, flexWrap: "wrap" }}>
-                {[["Mood", e.mood], ["Energy", e.energy], ["Stress", e.stress]].map(([lbl, val]) => {
-                  const opt = val !== null && val !== undefined ? RELATIVE.find(r => r.value === val) : null;
-                  return <span key={lbl} style={{ fontSize: 12, color: opt?.color || "var(--text3)" }}>
-                    {lbl}: {opt ? opt.short + " " + opt.label : "—"}
-                  </span>;
-                })}
-              </div>
-              <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-                {e.symptoms?.slice(0, 3).map(s => <span key={s} style={{ fontSize: 11, padding: "2px 7px", borderRadius: 10, background: "var(--red-light)", color: "var(--red)" }}>{s}</span>)}
-                {e.podcastGenres?.slice(0, 2).map(g => <span key={g} style={{ fontSize: 11, padding: "2px 7px", borderRadius: 10, background: "var(--purple-light)", color: "var(--purple)" }}>{g}</span>)}
-                {e.spotifyTracks?.length > 0 && <span style={{ fontSize: 11, padding: "2px 7px", borderRadius: 10, background: "var(--green-light)", color: "var(--green-text)" }}>🎵 {e.spotifyTracks.length}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-      );
-    }
+  const available=PERIODS.filter(p=>entries.some(e=>e.date>=p.start&&e.date<=p.end));
+  if(!available.length)return null;
+  const cur=activePeriod?summaries[activePeriod]:null;
+  const curPeriod=activePeriod?PERIODS.find(p=>p.id===activePeriod):null;
 
-    // added before insights tab //
-    function SummarySection({ entries, apiKey }) {
-      const PERIODS = [
-        { id: "week-0", ...getWeekRange(0) }, { id: "week-1", ...getWeekRange(-1) },
-        { id: "month-0", ...getMonthRange(0) }, { id: "month-1", ...getMonthRange(-1) },
-      ];
-      const [activePeriod, setActivePeriod] = useState(null);
-      const [summaries, setSummaries] = useState(() => store.get("summaries") || {});
-      const [loading, setLoading] = useState(false);
-      const [error, setError] = useState("");
-
-      const generate = async (period) => {
-        if (!apiKey) { setError("Add your Anthropic API key in Settings"); return; }
-        const pe = entries.filter(e => e.date >= period.start && e.date <= period.end);
-        if (!pe.length) { setError(`No entries for ${period.label}.`); return; }
-        setLoading(true); setError("");
-        const lines = pe.map(e => `${e.date}${e.location ? ` [${e.location}]` : ""}${e.weather ? ` {${Math.round(e.weather.temp)}°C}` : ""}: mood=${relLabel(e.mood)}, energy=${relLabel(e.energy)}, stress=${relLabel(e.stress)}` +
-          (e.symptoms?.length ? `, symptoms: ${e.symptoms.join(", ")}` : "") + (e.activities?.length ? `, activities: ${e.activities.join(", ")}` : "") + (e.podcastGenres?.length ? `, podcasts: ${e.podcastGenres.join(", ")}` : "") + (e.food ? `, food: ${e.food}` : "" + (e.notes ? `, notes: "${e.notes}"` : "")));
-        try {
-          const res = await fetch("https://api.anthropic.com/v1/messages", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
-            body: JSON.stringify({
-              model: "claude-sonnet-4-20250514", max_tokens: 900,
-              system: `Write a warm personal summary of someone's health journal for a specific period. Flowing paragraphs, no bullets. Cover: overall feeling, mood/energy/stress patterns, symptoms, what helped, media/podcast binge patterns as stress signals, one forward-looking sentence. Around 200-250 words.`,
-              messages: [{ role: "user", content: `${period.label} journal (${period.start} to ${period.end}):\n\n${lines.join("\n")}\n\nWrite a personal summary.` }]
-            })
-          });
-          const data = await res.json();
-          const text = data.content?.[0]?.text || "";
-          const updated = { ...summaries, [period.id]: { text, generatedAt: new Date().toISOString(), label: period.label } };
-          setSummaries(updated); store.set("summaries", updated);
-        } catch { setError("Couldn't generate summary."); }
-        setLoading(false);
-      };
-
-      const available = PERIODS.filter(p => entries.filter(e => e.date >= p.start && e.date <= p.end).length > 0);
-      if (!available.length) return null;
-      const cur = activePeriod ? summaries[activePeriod] : null;
-      const curPeriod = activePeriod ? PERIODS.find(p => p.id === activePeriod) : null;
-      return (
-        <div>
-          <p className="section-label" style={{ marginBottom: 10 }}>📅 Summaries</p>
-          <div style={{ display: "flex", gap: 8, marginBottom: 14, flexWrap: "wrap" }}>
-            {available.map(p => (
-              <button key={p.id} className={`btn-ghost ${activePeriod === p.id ? "active" : ""}`}
-                onClick={() => { setActivePeriod(p.id); setError(""); }}>
-                {p.label}{summaries[p.id] ? " ✓" : ""}
-              </button>
-            ))}
-          </div>
-          {error && <p style={{ fontSize: 13, color: "var(--red)", marginBottom: 10 }}>{error}</p>}
-          {activePeriod && (cur ? (
-            <div className="insight-box">
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                <p style={{ fontSize: 12, color: "var(--text3)" }}>{cur.label}</p>
-                <button onClick={() => generate(curPeriod)} disabled={loading}
-                  style={{ fontSize: 11, color: "var(--text3)", background: "none", border: "none", cursor: "pointer" }}>
-                  {loading ? "Regenerating..." : "↺ Refresh"}
-                </button>
-              </div>
-              <p style={{ fontSize: 14, lineHeight: 1.85, whiteSpace: "pre-wrap" }}>{cur.text}</p>
-              <p style={{ fontSize: 11, color: "var(--text3)", marginTop: 12 }}>Generated {new Date(cur.generatedAt).toLocaleDateString()}</p>
-            </div>
-          ) : (
-            <button onClick={() => generate(curPeriod)} disabled={loading} className="btn-secondary">
-              {loading ? `Writing ${curPeriod?.label} summary...` : `Generate ${curPeriod?.label} summary`}
+  return(
+    <div>
+      <p className="section-label" style={{marginBottom:10}}>📅 Summaries</p>
+      <div style={{display:"flex",gap:8,marginBottom:14,flexWrap:"wrap"}}>
+        {available.map(p=><button key={p.id} className={`btn-ghost ${activePeriod===p.id?"active":""}`} onClick={()=>{setActivePeriod(p.id);setError("");}}>{p.label}{summaries[p.id]?" ✓":""}</button>)}
+      </div>
+      {error&&<p style={{fontSize:13,color:"var(--red)",marginBottom:10}}>{error}</p>}
+      {activePeriod&&(cur?(
+        <div className="insight-box">
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+            <p style={{fontSize:12,color:"var(--text3)"}}>{cur.label}</p>
+            <button onClick={()=>generate(curPeriod)} disabled={loading} style={{fontSize:11,color:"var(--text3)",background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:3}}>
+              <Icon name="rotateCcw" size={12}/>{loading?"Regenerating...":"Refresh"}
             </button>
-          ))}
-        </div>
-      );
-    }
-
-    // ── Insights Tab ─────────────────────────────────────────────────────────────
-
-    function InsightsTab({ entries, settings }) {
-      const [insight, setInsight] = useState("");
-      const [loading, setLoading] = useState(false);
-      const [error, setError] = useState("");
-
-      const podcastBinges = (() => {
-        const result = {};
-        PODCAST_GENRES.forEach(g => {
-          let streak = 0, max = 0;
-          entries.forEach(e => { if (e.podcastGenres?.includes(g)) { streak++; max = Math.max(max, streak); } else streak = 0; });
-          if (max >= 2) result[g] = max;
-        });
-        return Object.entries(result).sort((a, b) => b[1] - a[1]);
-      })();
-
-      const topSymptoms = (() => {
-        const c = {};
-        entries.forEach(e => e.symptoms?.forEach(s => { c[s] = (c[s] || 0) + 1; }));
-        return Object.entries(c).sort((a, b) => b[1] - a[1]).slice(0, 5);
-      })();
-
-      const topPodcasts = (() => {
-        const c = {};
-        entries.forEach(e => e.podcastGenres?.forEach(g => { c[g] = (c[g] || 0) + 1; }));
-        return Object.entries(c).sort((a, b) => b[1] - a[1]).slice(0, 5);
-      })();
-
-      const moodStreak = (() => {
-        let s = 0; for (const e of entries) { if (e.mood === 1) s++; else break; } return s;
-      })();
-
-      const analyze = async () => {
-        if (!settings.anthropicKey) { setError("Add your Anthropic API key in Settings ⚙"); return; }
-        if (entries.length < 2) { setError("Log at least 2 days to get insights."); return; }
-        setLoading(true); setInsight(""); setError("");
-
-        const recent = entries.slice(0, 30);
-        const summary = recent.map(e => {
-          const music = e.spotifyTracks?.length ? `music: ${e.spotifyTracks.slice(0, 3).map(t => `${t.name}${t.plays > 1 ? ` ×${t.plays}` : ""}`).join(", ")}${e.spotifyTracks.length > 3 ? ` +${e.spotifyTracks.length - 3} more` : ""}` : null;
-          const pods = e.podcastGenres?.length ? `podcasts (${e.podcastGenres.join(", ")})${e.podcastNote ? ` — ${e.podcastNote}` : ""}` : null;
-          return `${e.date}${e.location ? ` [${e.location}]` : ""}${e.weather ? ` {${Math.round(e.weather.temp)}°C, ${wmoDesc(e.weather.code)}}` : ""}: mood=${relLabel(e.mood)}, energy=${relLabel(e.energy)}, stress=${relLabel(e.stress)}` +
-            (e.symptoms?.length ? `, symptoms: ${e.symptoms.join(", ")}` : "") +
-            (e.activities?.length ? `, activities: ${e.activities.join(", ")}` : "") +
-            (music ? `, ${music}` : "") +
-            (pods ? `, ${pods}` : "") +
-            (e.food ? `, food: ${e.food}` : "") +
-            (e.notes ? `, notes: "${e.notes}"` : "");
-        }).join("\n");
-
-        try {
-          const res = await fetch("https://api.anthropic.com/v1/messages", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "x-api-key": settings.anthropicKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
-            body: JSON.stringify({
-              model: "claude-sonnet-4-20250514", max_tokens: 1000,
-              system: `You are a personal wellness analyst. The user logs daily health as Better/Same/Worse vs the previous day.
-Entries include location, weather, mood/energy/stress, symptoms, activities, Spotify music, podcast genres, food, notes.
-
-KEY INSIGHT: This user specifically uses podcast bingeing as a stress signal — listening to the same genre for multiple consecutive days often signals sustained stress or anxiety. Watch carefully for this pattern and highlight it when present. Also note shifts in music listening volume or genre.
-
-Analyse patterns warmly, specifically, and practically. Use brief headers.
-Cover: (1) mood/energy/stress trends, (2) media consumption as emotional signal especially podcast binges, (3) correlations with weather/location/activity/food, (4) 1-2 gentle concrete suggestions. Under 350 words.`,
-              messages: [{ role: "user", content: `My health journal (up to 30 days):\n\n${summary}\n\nPlease analyse my patterns.` }]
-            })
-          });
-          const data = await res.json();
-          if (data.error) { setError(`API error: ${data.error.message}`); setLoading(false); return; }
-          setInsight(data.content?.[0]?.text || "No response.");
-        } catch (e) { setError("Couldn't connect. Check your API key and internet connection."); }
-        setLoading(false);
-      };
-
-      return (
-        <div>
-          {moodStreak >= 2 && <div className="streak-alert">🌱 {moodStreak} days in a row feeling better than the day before</div>}
-          {podcastBinges.length > 0 && (
-            <div className="binge-alert">
-              🎙 Podcast binge: {podcastBinges.map(([g, s]) => <span key={g}><strong>{g}</strong> {s} days in a row </span>)}
-            </div>
-          )}
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 14 }}>
-            {topSymptoms.length > 0 && (
-              <div className="card" style={{ marginBottom: 0 }}>
-                <p style={{ fontSize: 12, color: "var(--text3)", marginBottom: 8 }}>Top symptoms</p>
-                {topSymptoms.map(([s, n]) => (
-                  <div key={s} style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                    <span style={{ fontSize: 12 }}>{s}</span><span style={{ fontSize: 12, color: "var(--red)" }}>{n}×</span>
-                  </div>
-                ))}
-              </div>
-            )}
-            {topPodcasts.length > 0 && (
-              <div className="card" style={{ marginBottom: 0 }}>
-                <p style={{ fontSize: 12, color: "var(--text3)", marginBottom: 8 }}>🎙 Top genres</p>
-                {topPodcasts.map(([g, n]) => (
-                  <div key={g} style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                    <span style={{ fontSize: 12 }}>{g}</span><span style={{ fontSize: 12, color: "var(--purple)" }}>{n}×</span>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
-
-          <button onClick={analyze} disabled={loading} className="btn-secondary" style={{ marginBottom: 14, fontSize: 14 }}>
-            {loading ? "Analysing..." : entries.length < 2 ? "Log more days to unlock insights" : `Analyse ${Math.min(entries.length, 30)} days with AI`}
-          </button>
-
-          {error && <p style={{ fontSize: 13, color: "var(--red)", textAlign: "center", marginBottom: 12 }}>{error}</p>}
-          {insight && (
-            <div className="insight-box">
-              <p style={{ fontSize: 12, color: "var(--text3)", marginBottom: 10 }}>AI analysis</p>
-              <div style={{ fontSize: 14, lineHeight: 1.75, whiteSpace: "pre-wrap" }}>{insight}</div>
-            </div>
-          )}
-          {!entries.length && !insight && (
-            <div style={{ textAlign: "center", padding: "40px 0", color: "var(--text3)", fontSize: 14 }}>
-              Start logging daily to unlock insights.
-            </div>
-          )}
-          <hr style={{ border: "none", borderTop: "0.5px solid var(--border)", margin: "20px 0" }} />
-          <SummarySection entries={entries} apiKey={settings.anthropicKey} />
+          <p style={{fontSize:14,lineHeight:1.85,whiteSpace:"pre-wrap"}}>{cur.text}</p>
+          <p style={{fontSize:11,color:"var(--text3)",marginTop:12}}>Generated {new Date(cur.generatedAt).toLocaleDateString()}</p>
         </div>
-      );
+      ):(
+        <button onClick={()=>generate(curPeriod)} disabled={loading} className="btn-secondary">
+          {loading?`Writing ${curPeriod?.label} summary...`:`Generate ${curPeriod?.label} summary`}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ── Insights Tab ──────────────────────────────────────────────────────────────
+function InsightsTab({entries,settings,glucoseData}){
+  const[insight,setInsight]=useState("");
+  const[loading,setLoading]=useState(false);
+  const[error,setError]=useState("");
+
+  const podcastBinges=(()=>{const r={};PODCAST_GENRES.forEach(g=>{let s=0,m=0;entries.forEach(e=>{if(e.podcastGenres?.includes(g)){s++;m=Math.max(m,s);}else s=0;});if(m>=2)r[g]=m;});return Object.entries(r).sort((a,b)=>b[1]-a[1]);})();
+  const topSymptoms=(()=>{const c={};entries.forEach(e=>e.symptoms?.forEach(s=>{c[s]=(c[s]||0)+1;}));return Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,5);})();
+  const topPodcasts=(()=>{const c={};entries.forEach(e=>e.podcastGenres?.forEach(g=>{c[g]=(c[g]||0)+1;}));return Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,5);})();
+  const moodStreak=(()=>{let s=0;for(const e of entries){if(e.mood===1)s++;else break;}return s;})();
+
+  const analyze=async()=>{
+    if(!settings.anthropicKey){setError("Add your Anthropic API key in Settings");return;}
+    if(entries.length<2){setError("Log at least 2 days to get insights.");return;}
+    setLoading(true);setInsight("");setError("");
+    const summary=entries.slice(0,30).map(entrySummaryLine).join("\n");
+    const hasGlucose=glucoseData&&Object.keys(glucoseData).length>0;
+    try{
+      const text=await callClaude(settings.anthropicKey,
+        [{role:"user",content:`My health journal (up to 30 days):\n\n${summary}${hasGlucose?"\n\nNote: FreeStyle Libre glucose data is also available for some days.":""}\n\nPlease analyse my patterns.`}],
+        `You are a personal wellness analyst. The user logs daily health as Better/Same/Worse vs the previous day. 
+Entries include location, weather, moon phase, mood/energy/stress, symptoms (with condition tracking for ongoing ones), 
+activities, steps, period/cycle data, poop log, Spotify music, podcast genres, food, notes. 
+Glucose data from FreeStyle Libre may also be referenced.
+
+KEY INSIGHTS: 
+- Podcast bingeing (same genre 2+ days) is this user's key stress signal — highlight when present
+- Note any correlations with moon phases, period cycle, weather, location
+- Watch for symptom condition patterns (e.g. headache getting worse over days)
+
+Analyse warmly and practically. Use brief headers. Cover: (1) mood/energy/stress trends, (2) symptom patterns including any ongoing ones, (3) cycle/period patterns if relevant, (4) media as stress signal, (5) correlations (weather/location/moon/food/activity), (6) 1-2 gentle concrete suggestions. Under 400 words.`,
+        1200);
+      setInsight(text);
+    }catch{setError("Couldn't connect. Check your API key.");}
+    setLoading(false);
+  };
+
+  return(
+    <div>
+      {moodStreak>=2&&<div className="streak-alert">🌱 {moodStreak} days in a row feeling better than the day before</div>}
+      {podcastBinges.length>0&&<div className="binge-alert">🎙 Podcast binge: {podcastBinges.map(([g,s])=><span key={g} style={{marginRight:8}}><strong>{g}</strong> {s} days in a row</span>)}</div>}
+
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
+        {topSymptoms.length>0&&<div className="card" style={{marginBottom:0}}><p style={{fontSize:12,color:"var(--text3)",marginBottom:8}}>Top symptoms</p>{topSymptoms.map(([s,n])=><div key={s} style={{display:"flex",justifyContent:"space-between",marginBottom:4}}><span style={{fontSize:12}}>{s}</span><span style={{fontSize:12,color:"var(--red)"}}>{n}×</span></div>)}</div>}
+        {topPodcasts.length>0&&<div className="card" style={{marginBottom:0}}><p style={{fontSize:12,color:"var(--text3)",marginBottom:8}}>🎙 Top genres</p>{topPodcasts.map(([g,n])=><div key={g} style={{display:"flex",justifyContent:"space-between",marginBottom:4}}><span style={{fontSize:12}}>{g}</span><span style={{fontSize:12,color:"var(--purple)"}}>{n}×</span></div>)}</div>}
+      </div>
+
+      <button onClick={analyze} disabled={loading} className="btn-secondary" style={{marginBottom:14}}>
+        {loading?"Analysing...":entries.length<2?"Log more days to unlock insights":`Analyse ${Math.min(entries.length,30)} days with AI`}
+      </button>
+
+      {error&&<p style={{fontSize:13,color:"var(--red)",textAlign:"center",marginBottom:12}}>{error}</p>}
+      {insight&&<div className="insight-box"><p style={{fontSize:12,color:"var(--text3)",marginBottom:10}}>AI pattern analysis</p><div style={{fontSize:14,lineHeight:1.75,whiteSpace:"pre-wrap"}}>{insight}</div></div>}
+
+      <hr/>
+      <SummarySection entries={entries} apiKey={settings.anthropicKey} settings={settings}/>
+
+      {!entries.length&&<div style={{textAlign:"center",padding:"40px 0",color:"var(--text3)",fontSize:14}}>Start logging daily to unlock insights.</div>}
+    </div>
+  );
+}
+
+// ── App root ──────────────────────────────────────────────────────────────────
+function App(){
+  const[tab,setTab]=useState("log");
+  const[entries,setEntries]=useState([]);
+  const[settings,setSettings]=useState({anthropicKey:"",spotifyToken:"",notifEnabled:false,notifTime:"21:00",dateFormat:"default"});
+  const[glucoseData,setGlucoseData]=useState({});
+  const[showSettings,setShowSettings]=useState(false);
+  const[loaded,setLoaded]=useState(false);
+
+  useEffect(()=>{
+    const e=store.get("entries")||[];
+    const s=store.get("settings")||{};
+    const g=store.get("glucoseData")||{};
+    setEntries(e);
+    setSettings({anthropicKey:"",spotifyToken:"",notifEnabled:false,notifTime:"21:00",dateFormat:"default",...s});
+    setGlucoseData(g);
+    setLoaded(true);
+    // Schedule notification
+    if(s.notifEnabled&&s.notifTime){
+      const hasLogged=e.find(en=>en.date===TODAY);
+      scheduleNotif(s.notifTime,!!hasLogged);
     }
+  },[]);
 
-    // ── App root ─────────────────────────────────────────────────────────────────
-
-    function App() {
-      const [tab, setTab] = useState("log");
-      const [entries, setEntries] = useState([]);
-      const [settings, setSettings] = useState({ anthropicKey: "", spotifyToken: "" });
-      const [showSettings, setShowSettings] = useState(false);
-      const [loaded, setLoaded] = useState(false);
-
-      useEffect(() => {
-        setEntries(store.get("entries") || []);
-        setSettings(store.get("settings") || { anthropicKey: "", spotifyToken: "" });
-        setLoaded(true);
-      }, []);
-
-      const saveSettings = (s) => {
-        const merged = { ...settings, ...s };
-        setSettings(merged); store.set("settings", merged); setShowSettings(false);
-      };
-
-      if (!loaded) return <div style={{ textAlign: "center", padding: 60, color: "var(--text3)" }}>Loading...</div>;
-
-      const tabs = [
-        { id: "log", icon: "✏", label: "Log" },
-        { id: "history", icon: "📅", label: `History${entries.length ? ` (${entries.length})` : ""}` },
-        { id: "insights", icon: "✦", label: "Insights" },
-        { id: "settings-btn", icon: "⚙", label: "Settings" },
-      ];
-
-      return (
-        <>
-          {showSettings && <SettingsModal settings={settings} onSave={saveSettings} onClose={() => setShowSettings(false)} />}
-
-          {tab === "log" && <LogTab entries={entries} setEntries={setEntries} settings={settings} />}
-          {tab === "history" && <HistoryTab entries={entries} />}
-          {tab === "insights" && <InsightsTab entries={entries} settings={settings} />}
-
-          <nav className="tab-bar">
-            {tabs.map(t => (
-              <button key={t.id} className={`tab-btn ${tab === t.id && t.id !== "settings-btn" ? "active" : ""}`}
-                onClick={() => t.id === "settings-btn" ? setShowSettings(true) : setTab(t.id)}>
-                <span className="icon">{t.icon}</span>
-                <span>{t.label}</span>
-              </button>
-            ))}
-          </nav>
-        </>
-      );
+  const saveSettings=(s)=>{
+    const merged={...settings,...s};
+    setSettings(merged);store.set("settings",merged);setShowSettings(false);
+    if(s.notifEnabled&&s.notifTime){
+      const hasLogged=entries.find(e=>e.date===TODAY);
+      scheduleNotif(s.notifTime,!!hasLogged);
     }
+  };
 
-    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
-  </script>
+  if(!loaded)return <div style={{textAlign:"center",padding:60,color:"var(--text3)"}}>Loading...</div>;
 
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(() => { });
-      });
-    }
-  </script>
+  const tabs=[
+    {id:"log",   icon:"pencilLine", label:"Log"},
+    {id:"history",icon:"calendar",  label:`History${entries.length?` (${entries.length})`:""}`},
+    {id:"insights",icon:"sparkles", label:"Insights"},
+    {id:"settings-btn",icon:"settings2",label:"Settings"},
+  ];
+
+  return(
+    <>
+      {showSettings&&<SettingsModal settings={settings} onSave={saveSettings} onClose={()=>setShowSettings(false)} onGlucoseImport={setGlucoseData}/>}
+      {tab==="log"       &&<LogTab entries={entries} setEntries={setEntries} settings={settings} glucoseData={glucoseData}/>}
+      {tab==="history"   &&<HistoryTab entries={entries} settings={settings} glucoseData={glucoseData}/>}
+      {tab==="insights"  &&<InsightsTab entries={entries} settings={settings} glucoseData={glucoseData}/>}
+      <nav className="tab-bar">
+        {tabs.map(t=>(
+          <button key={t.id} className={`tab-btn ${tab===t.id&&t.id!=="settings-btn"?"active":""}`}
+            onClick={()=>t.id==="settings-btn"?setShowSettings(true):setTab(t.id)}>
+            <Icon name={t.icon} size={20} color={tab===t.id&&t.id!=="settings-btn"?"var(--green)":"var(--text3)"}/>
+            <span>{t.label}</span>
+          </button>
+        ))}
+      </nav>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{});});
+}
+</script>
 </body>
-
 </html>
