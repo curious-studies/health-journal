@@ -170,19 +170,26 @@ function formatDateFn(dateStr,fmt="default"){
   }
 }
 
-function moonPhase(dateStr){
-  const d=new Date(dateStr+"T00:00:00");
-  const known=new Date("2000-01-06T00:00:00");
-  const lunation=29.53058867;
-  let phase=(((d-known)/(1000*60*60*24))%lunation+lunation)%lunation;
-  if(phase<1.85||phase>=27.68)return{name:"New Moon",emoji:"🌑"};
-  if(phase<7.38)return{name:"Waxing Crescent",emoji:"🌒"};
-  if(phase<9.22)return{name:"First Quarter",emoji:"🌓"};
-  if(phase<14.77)return{name:"Waxing Gibbous",emoji:"🌔"};
-  if(phase<16.61)return{name:"Full Moon",emoji:"🌕"};
-  if(phase<22.15)return{name:"Waning Gibbous",emoji:"🌖"};
-  if(phase<23.99)return{name:"Last Quarter",emoji:"🌗"};
-  return{name:"Waning Crescent",emoji:"🌘"};
+function moonPhase(dateStr) {
+  const d = new Date(dateStr + "T12:00:00");
+  const knownNewMoon = 2451550.26; // Jan 6, 2000 at 18:14 UTC (precise)
+  const lunation = 29.53058867;
+  // Calculate Julian Date
+  let y = d.getUTCFullYear(), m = d.getUTCMonth() + 1, day = d.getUTCDate();
+  if (m <= 2) { y--; m += 12; }
+  const A = Math.floor(y / 100);
+  const B = 2 - A + Math.floor(A / 4);
+  const JD = Math.floor(365.25*(y+4716)) + Math.floor(30.6001*(m+1)) + day + B - 1524.5;
+  let phase = ((JD - knownNewMoon) % lunation + lunation) % lunation;
+  // Narrower, more accurate thresholds
+  if (phase < 1.0 || phase >= 28.5) return { name:"New Moon", emoji:"🌑" };
+  if (phase < 7.38)  return { name:"Waxing Crescent", emoji:"🌒" };
+  if (phase < 8.38)  return { name:"First Quarter",   emoji:"🌓" };
+  if (phase < 14.77) return { name:"Waxing Gibbous",  emoji:"🌔" };
+  if (phase < 15.77) return { name:"Full Moon",        emoji:"🌕" };
+  if (phase < 22.15) return { name:"Waning Gibbous",  emoji:"🌖" };
+  if (phase < 23.15) return { name:"Last Quarter",    emoji:"🌗" };
+  return { name:"Waning Crescent", emoji:"🌘" };
 }
 
 function fileToBase64(file){
